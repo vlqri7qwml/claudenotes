@@ -1,4 +1,5 @@
 import {Constants} from "../../constants";
+import {getAIChatPasteBlockDOM} from "../../aiChat/paste";
 import {isEncryptedBox} from "../../util/pathName";
 import {preparePasteAssets} from "./pasteAssets";
 import {escapeHtml, escapeMarkdownPlainText} from "../../util/escape";
@@ -902,6 +903,17 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
             textHTML = doc.body.innerHTML.trim().replace("<!--StartFragment-->", "").replace("<!--EndFragment-->", "");
         }
         textHTML = Lute.Sanitize(textHTML);
+    }
+
+    // 从 AI 网页复制的对话转为带对话角色的超级块，插件仍可在下方继续处理
+    if (!blockDOMSanitizer && !siyuanHTML && !preserveSourceFormat) {
+        const chatBlockDOM = getAIChatPasteBlockDOM(protyle, textHTML, textPlain, initialBlockElement,
+            pasteInsertPosition.range);
+        if (chatBlockDOM) {
+            siyuanHTML = chatBlockDOM;
+            textHTML = "";
+            originalTextHTML = "";
+        }
     }
 
     if (areProtylePluginExtensionsEnabled(protyle) && protyle.app?.plugins && hasPluginSubscriber("paste")) {

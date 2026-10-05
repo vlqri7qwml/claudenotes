@@ -1,0 +1,38 @@
+[
+  {
+    "uuid": "c0ffee00-0000-4000-8000-000000000001",
+    "name": "Python 排序",
+    "created_at": "2025-03-01T08:00:00.000000Z",
+    "updated_at": "2025-03-01T08:05:00.000000Z",
+    "account": {"uuid": "acc"},
+    "chat_messages": [
+      {
+        "uuid": "m1", "sender": "human", "text": "How do I sort a list?",
+        "content": [{"type": "text", "text": "How do I sort a list?"}],
+        "created_at": "2025-03-01T08:00:00Z",
+        "attachments": [{"file_name": "data.csv", "file_size": 10, "file_type": "text/csv", "extracted_content": "a,b"}],
+        "files": []
+      },
+      {
+        "uuid": "m2", "sender": "assistant", "text": "",
+        "content": [
+          {"type": "thinking", "thinking": "The user wants sorting basics."},
+          {"type": "text", "text": "Use `sorted()`."},
+          {"type": "tool_use", "name": "artifacts", "input": {"id": "sort", "type": "application/vnd.ant.code", "title": "sort.py", "command": "create", "language": "python", "content": "print(sorted([3, 1, 2]))"}},
+          {"type": "tool_result", "name": "artifacts", "content": [{"type": "text", "text": "OK"}]}
+        ],
+        "created_at": "2025-03-01T08:00:05Z", "attachments": [], "files": []
+      }
+    ]
+  },
+  {
+    "uuid": "c0ffee00-0000-4000-8000-000000000002",
+    "name": "",
+    "created_at": "2024-06-01T08:00:00Z",
+    "chat_messages": [
+      {"uuid": "m3", "sender": "human", "text": "Draw a diagram", "content": [], "attachments": [], "files": []},
+      {"uuid": "m4", "sender": "assistant", "text": "Here it is:\n<antArtifact identifier=\"d\" type=\"application/vnd.ant.mermaid\" title=\"Flow\">\ngraph TD; A-->B\n</antArtifact>", "content": [], "attachments": [], "files": []}
+    ]
+  },
+  {"uuid": "empty", "name": "Empty", "chat_messages": []}
+]

@@ -1,0 +1,38 @@
+<div class="flex-1 flex flex-col gap-3 px-4 max-w-3xl mx-auto w-full pt-1">
+  <div data-test-render-count="1">
+    <div class="group relative inline-flex gap-2 bg-bg-300 rounded-xl pl-2.5 py-2.5 break-words text-text-100">
+      <div class="flex flex-row gap-2 relative">
+        <div class="shrink-0"><div class="flex shrink-0 items-center justify-center rounded-full font-bold select-none h-7 w-7 text-[12px] bg-text-200 text-bg-100">GN</div></div>
+        <div data-testid="user-message" class="font-large !font-user-message grid grid-cols-1 gap-2 py-0.5">
+          <p class="whitespace-pre-wrap break-words">How do I sort a list in Python?</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div data-test-render-count="1">
+    <div data-is-streaming="false" class="group relative pb-3">
+      <div class="font-claude-response relative leading-[1.65rem]">
+        <div><div class="grid-cols-1 grid gap-2.5 standard-markdown">
+          <p class="whitespace-normal break-words">Use <code class="bg-text-200/5">sorted()</code>:</p>
+          <div class="relative group/copy bg-bg-000/50 border-0.5 border-border-400 rounded-lg">
+            <div class="sticky opacity-0 top-2 py-2 h-12 w-0 float-right"><div class="absolute right-0 h-8 px-2 items-center inline-flex"><button type="button" aria-label="Copy to clipboard"><svg viewBox="0 0 20 20"><path d="M1 1"></path></svg><span class="text-text-200 pr-1">Copy</span></button></div></div>
+            <div class="text-text-500 font-small p-3.5 pb-0">python</div>
+            <div class=""><pre class="code-block__code !my-0 !rounded-lg"><code class="language-python"><span><span class="token">nums</span> = sorted(nums)</span>
+</code></pre></div>
+          </div>
+          <table><thead><tr><th>Method</th><th>Stable</th></tr></thead><tbody><tr><td>sorted</td><td>Yes</td></tr></tbody></table>
+          <p>Complexity: <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>O</mi></mrow><annotation encoding="application/x-tex">O(n \log n)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base">O(n log n)</span></span></span></p>
+        </div></div>
+      </div>
+      <div class="absolute -bottom-0 -right-1.5"><div class="flex items-center"><button>Copy</button><button>Retry</button></div></div>
+    </div>
+  </div>
+  <div data-test-render-count="1">
+    <div class="group relative inline-flex gap-2 bg-bg-300 rounded-xl">
+      <div data-testid="user-message" class="font-large !font-user-message"><p class="whitespace-pre-wrap break-words">Thanks!</p></div>
+    </div>
+  </div>
+  <div data-test-render-count="1">
+    <div data-is-streaming="false" class="group relative pb-3"><div class="font-claude-response"><div class="standard-markdown"><p>You're welcome.</p></div></div></div>
+  </div>
+</div>

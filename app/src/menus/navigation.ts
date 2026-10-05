@@ -1,4 +1,5 @@
 import type {BlockQueryRequestInput} from "../types/api";
+import {openChatImportDialog} from "../aiChat/dialog";
 import {copySubMenu, exportMd, movePathToMenu, openFileAttr, renameMenu,} from "./commonMenuItem";
 /// #if !BROWSER
 import {FileFilter, ipcRenderer} from "electron";
@@ -660,7 +661,7 @@ export const initNavigationMenu = (app: App, liElement: HTMLElement) => {
         }).element);
     }
     /// #endif
-    genImportMenu(notebookId, "/");
+    genImportMenu(app, notebookId, "/");
 
     if (getHostCapabilities().importExport) {
         window.siyuan.menus.menu.append(new MenuItem({
@@ -1046,7 +1047,7 @@ export const initFileMenu = (app: App, notebookId: string, pathString: string, l
             }
         }).element);
     }
-    genImportMenu(notebookId, pathString);
+    genImportMenu(app, notebookId, pathString);
     window.siyuan.menus.menu.append(exportMd(id));
     emitOpenMenu({
         type: "open-menu-doctree",
@@ -1061,7 +1062,7 @@ export const initFileMenu = (app: App, notebookId: string, pathString: string, l
     return window.siyuan.menus.menu;
 };
 
-export const genImportMenu = (notebookId: string, pathString: string) => {
+export const genImportMenu = (app: App, notebookId: string, pathString: string) => {
     if (window.siyuan.config.readonly || !getHostCapabilities().importExport) {
         return;
     }
@@ -1146,8 +1147,16 @@ export const genImportMenu = (notebookId: string, pathString: string) => {
             },
             /// #if !BROWSER
             importstdmd("Markdown " + window.siyuan.languages.doc, true),
-            importstdmd("Markdown " + window.siyuan.languages.folder)
+            importstdmd("Markdown " + window.siyuan.languages.folder),
             /// #endif
+            {
+                id: "importAIChat",
+                icon: "iconChat",
+                label: window.siyuan.languages.aiChatImportMenu,
+                click: () => {
+                    openChatImportDialog(app, {notebookId, path: pathString});
+                }
+            },
         ],
     }).element);
 };

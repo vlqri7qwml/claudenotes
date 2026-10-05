@@ -1,0 +1,45 @@
+// AI 对话块：custom-sy-chat-role 为 user 的块显示为右侧气泡，assistant 为正文，thinking 为带左边线的思考过程
+.protyle-wysiwyg [data-node-id][custom-sy-chat-role] {
+  border-radius: 16px;
+}
+
+.protyle-wysiwyg [data-node-id][custom-sy-chat-role="user"] {
+  width: fit-content;
+  max-width: 85%;
+  min-width: 48px;
+  margin: 20px 0 8px auto;
+  padding: 10px 14px;
+  box-sizing: border-box;
+  background-color: var(--b3-ai-chat-user-background, var(--b3-list-hover));
+  font-family: var(--b3-font-family);
+  line-height: 1.6;
+
+  & > [data-node-id] {
+    margin: 0;
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+.protyle-wysiwyg [data-node-id][custom-sy-chat-role="assistant"] {
+  margin: 8px 0 16px;
+  line-height: 1.7;
+}
+
+.protyle-wysiwyg [data-node-id][custom-sy-chat-role="user"],
+.protyle-wysiwyg [data-node-id][custom-sy-chat-role="assistant"] {
+  .code-block {
+    border: 1px solid var(--b3-border-color);
+    border-radius: 10px;
+  }
+}
+
+.protyle-wysiwyg [data-node-id][custom-sy-chat-role="thinking"] {
+  margin: 8px 0;
+  padding: 4px 0 4px 14px;
+  border-left: 2px solid var(--b3-border-color);
+  border-radius: 0;
+  color: var(--b3-theme-on-surface);
+  font-size: .9em;
+  line-height: 1.6;
+}

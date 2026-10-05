@@ -90,6 +90,11 @@ export abstract class Constants {
     public static readonly CUSTOM_SY_LIST_MINDMAP_DATA: string = "custom-sy-list-mindmap-data";
     public static readonly CUSTOM_SY_TITLE_EMPTY: string = "custom-sy-title-empty";
     public static readonly CUSTOM_SY_CODE_TAB_SPACES: string = "custom-sy-code-tab-spaces";
+    // AI 对话块：角色（user / assistant / thinking）、来源网站；导入的对话文档另记录原始 ID 与创建时间
+    public static readonly CUSTOM_SY_CHAT_ROLE: string = "custom-sy-chat-role";
+    public static readonly CUSTOM_SY_CHAT_SOURCE: string = "custom-sy-chat-source";
+    public static readonly CUSTOM_SY_CHAT_ID: string = "custom-sy-chat-id";
+    public static readonly CUSTOM_SY_CHAT_CREATED: string = "custom-sy-chat-created";
 
     // 临时标记 DOM 属性以辅助完成其功能
     public static readonly ATTRIBUTE_EDITING = "data-editing";
@@ -192,6 +197,8 @@ export abstract class Constants {
     public static readonly LOCAL_EXPORTIMG = "local-exportimg";
     public static readonly LOCAL_EXPORTPATH = "local-exportpath";
     public static readonly LOCAL_BAZAAR = "local-bazaar";
+    public static readonly LOCAL_AI_CHAT_PASTE = "local-ai-chat-paste";
+    public static readonly LOCAL_AI_CHAT_THINKING = "local-ai-chat-thinking";
     public static readonly LOCAL_PDFTHEME = "local-pdftheme";
     public static readonly LOCAL_LAYOUTS = "local-layouts";
     public static readonly LOCAL_WINDOW_WORKSPACE = "local-window-workspace-";

@@ -7,6 +7,12 @@ import {controlSelect} from "../setting/control";
 import {genStackHtml} from "../render/render";
 import type {StackLine} from "../render/parts";
 import {getHostCapabilities} from "../../util/hostCapabilities";
+import {
+    isAIChatPasteEnabled,
+    isAIChatThinkingIncluded,
+    setAIChatPasteEnabled,
+    setAIChatThinkingIncluded,
+} from "../../aiChat/preference";
 /// #if !BROWSER
 import {ipcRenderer} from "electron";
 /// #endif
@@ -415,11 +421,28 @@ const registerEditorAdvancedGroup = (tab: SettingTabBuilder) => {
     }
 };
 
+const registerEditorAIChatGroup = (tab: SettingTabBuilder) => {
+    const group = tab.group("aiChat", window.siyuan.languages.aiChatSettingGroup);
+    group.switch("aiChatPaste", {
+        title: window.siyuan.languages.aiChatPaste,
+        desc: window.siyuan.languages.aiChatPasteTip,
+        readConfig: isAIChatPasteEnabled,
+        save: (value) => setAIChatPasteEnabled(value === true),
+    });
+    group.switch("aiChatThinking", {
+        title: window.siyuan.languages.aiChatThinking,
+        desc: window.siyuan.languages.aiChatThinkingTip,
+        readConfig: isAIChatThinkingIncluded,
+        save: (value) => setAIChatThinkingIncluded(value === true),
+    });
+};
+
 export const registerEditorTab = (tab: SettingTabBuilder) => {
     registerEditorBehaviorGroup(tab);
     registerEditorBlockFeaturesGroup(tab);
     registerEditorBidirectionalGroup(tab);
     registerEditorMarkdownBlockGroup(tab);
     registerEditorMarkdownInlineGroup(tab);
+    registerEditorAIChatGroup(tab);
     registerEditorAdvancedGroup(tab);
 };

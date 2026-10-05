@@ -1,0 +1,87 @@
+// 导入聊天记录对话框
+.ai-chat-import {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  box-sizing: border-box;
+
+  &__drop {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 28px 24px;
+    border: 1px dashed var(--b3-border-color);
+    border-radius: var(--b3-border-radius-b);
+    color: var(--b3-theme-on-surface);
+    text-align: center;
+    transition: var(--b3-background-transition);
+
+    &--over {
+      border-color: var(--b3-theme-primary);
+      background-color: var(--b3-theme-primary-lightest);
+    }
+
+    &--compact {
+      flex-direction: row;
+      padding: 10px 16px;
+      text-align: left;
+
+      .ai-chat-import__icon,
+      .b3-label__text {
+        display: none;
+      }
+    }
+  }
+
+  &__icon {
+    width: 32px;
+    height: 32px;
+    color: var(--b3-theme-primary);
+  }
+
+  &__toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  &__list {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+  }
+
+  &__row {
+    gap: 8px;
+    cursor: pointer;
+
+    .b3-switch,
+    .b3-chip {
+      flex-shrink: 0;
+    }
+
+    &--existing {
+      opacity: .55;
+      cursor: default;
+    }
+  }
+
+  &__status {
+    white-space: pre-wrap;
+  }
+
+  &__check {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+  }
+
+  &__action {
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+}

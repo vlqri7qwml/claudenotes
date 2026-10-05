@@ -8,6 +8,7 @@ import {newFile} from "../../util/newFile";
 import {mountHelp, newDailyNote, newEncryptedNotebook, newNotebook} from "../../util/mount";
 import {exitSiYuan, lockScreen} from "../../dialog/processSystem";
 import {setCloudService} from "../../util/cloudService";
+import {openChatImportDialog} from "../../aiChat/dialog";
 import {openHistory} from "../../history/history";
 import {openCard} from "../../card/openCard";
 import {syncGuide} from "../../sync/syncGuide";
@@ -230,6 +231,14 @@ export const MOBILE_MAIN_MENU_GROUPS: IMobileMainMenuGroup[] = [{
         click() {
             closePanel();
             openDataMigration();
+        },
+    }, {
+        id: "menuImportAIChat",
+        icon: "iconChat",
+        label: lang("aiChatImport"),
+        click(app) {
+            closePanel();
+            openChatImportDialog(app);
         },
     }],
 }, {

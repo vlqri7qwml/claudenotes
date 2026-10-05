@@ -868,6 +868,36 @@ test("gutter height menus follow width and stay aligned across selection scopes"
     });
 });
 
+test("AI chat style follows block height in both block menu scopes and matches the gutter declaration", () => {
+    const source = readFileSync(resolve(process.cwd(), "src/protyle/gutter/index.ts"), "utf8");
+    const declaration = source.slice(source.indexOf("private genChatRole("));
+    const expectedOrder = ["chatStyleUser", "chatStyleAssistant", "chatStyleThinking", "separator_chatStyle",
+        "chatStyleClear"];
+    expectedOrder.forEach((id) => assert.ok(declaration.includes(`"${id}"`), id));
+    assert.ok(source.indexOf("this.genChatRole(selectsElement, protyle);") >
+        source.indexOf("this.genHeights(selectsElement, protyle);"));
+    assert.ok(source.indexOf("this.genChatRole([nodeElement], protyle);") >
+        source.indexOf("this.genHeights([nodeElement], protyle);"));
+
+    ["gutter.single", "gutter.multi"].forEach((scope) => {
+        const scopeChildren = getEntryCatalogChildren(scope);
+        const heightIndex = scopeChildren.findIndex((item) => item.key === "height");
+        assert.equal(scopeChildren[heightIndex + 1]?.key, "chatStyle", scope);
+        assert.deepEqual(getEntryCatalogNode(`${scope}.chatStyle`)?.children?.map((item) => item.key), expectedOrder,
+            scope);
+    });
+});
+
+test("AI chat import follows the Markdown imports in document tree import menus", () => {
+    const source = readFileSync(resolve(process.cwd(), "src/menus/navigation.ts"), "utf8");
+    assert.ok(source.indexOf("id: \"importAIChat\"") > source.indexOf("importstdmd(\"Markdown \" + window.siyuan.languages.folder)"));
+    ["docTree.notebook.import", "docTree.document.import"].forEach((path) => {
+        assert.deepEqual(getEntryCatalogChildren(path)?.map((item) => item.key), [
+            "importSiYuanZip", "importMarkdownZip", "importMarkdownDoc", "importMarkdownFolder", "importAIChat",
+        ], path);
+    });
+});
+
 test("super block column insertion actions follow block insertion actions", () => {
     const keys = getEntryCatalogChildren("gutter.single").map((item) => item.key);
     const insertBeforeIndex = keys.indexOf("insertBefore");

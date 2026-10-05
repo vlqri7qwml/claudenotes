@@ -356,4 +356,7 @@
     /* 所见即所得行内元素颜色 */
     --b3-protyle-inline-link-color: var(--claudenotes-accent-strong);
     --b3-protyle-inline-mark-background: #F7DFB5;
+
+    /* AI 对话块：提问气泡背景 */
+    --b3-ai-chat-user-background: var(--claudenotes-user-bubble);
 }

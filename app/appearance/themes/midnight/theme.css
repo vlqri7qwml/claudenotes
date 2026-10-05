@@ -356,4 +356,7 @@
     --b3-protyle-inline-link-color: #E08A6C;
     --b3-protyle-inline-mark-background: #6B5228;
     --b3-protyle-inline-mark-color: #F5E6CC;
+
+    /* AI 对话块：提问气泡背景 */
+    --b3-ai-chat-user-background: var(--claudenotes-user-bubble);
 }

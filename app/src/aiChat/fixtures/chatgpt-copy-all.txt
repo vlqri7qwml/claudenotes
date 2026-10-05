@@ -1,0 +1,13 @@
+You said:
+What is a closure?
+ChatGPT said:
+A closure is a function that captures variables.
+
+```text
+User: this line is inside a code block
+```
+
+You said:
+Thanks
+ChatGPT said:
+You're welcome!

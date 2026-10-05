@@ -23,6 +23,7 @@
 @use "business/skill-manager" as *;
 @use "business/color" as *;
 @use "protyle/protyle" as *;
+@use "protyle/ai_chat" as *; // 需在编辑器块样式之后，覆盖超级块的默认内边距
 @use "component/typography" as *;
 @use "pdf/pdf" as *;
 @use "business/config" as *;
@@ -37,6 +38,7 @@
 @use "business/onboarding" as *;
 @use "business/ai_agent" as *;
 @use "business/ai_editor" as *;
+@use "business/ai_chat_import" as *;
 @use "business/claudenotes" as *;
 @use "component/svg" as *;
 @use "main/mobile" as *;

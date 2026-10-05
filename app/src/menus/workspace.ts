@@ -39,6 +39,7 @@ import {openRecentDocs} from "../business/openRecentDocs";
 import {openDataMigration} from "./dataMigration";
 import {openLink} from "../editor/openLink";
 import {setCloudService} from "../util/cloudService";
+import {openChatImportDialog} from "../aiChat/dialog";
 import {adjustEditorFontSize} from "../util/editorFontSize";
 import {getHostCapabilities} from "../util/hostCapabilities";
 import {openTemplateManager} from "../template/manager";
@@ -440,6 +441,14 @@ export const workspaceMenu = async (app: App, rect: DOMRect) => {
                     icon: "iconDatabaseBackup",
                     click: () => {
                         openDataMigration();
+                    }
+                }).element);
+                window.siyuan.menus.menu.append(new MenuItem({
+                    id: "importAIChat",
+                    label: window.siyuan.languages.aiChatImport,
+                    icon: "iconChat",
+                    click: () => {
+                        openChatImportDialog(app);
                     }
                 }).element);
             }

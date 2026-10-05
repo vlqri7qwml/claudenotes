@@ -102,6 +102,7 @@ const runCases = async source => {
         const noop = () => {};
         const mocks = {
             "../../constants": {Constants: {ZWSP: "\u200b"}},
+            "../../aiChat/paste": {getAIChatPasteBlockDOM: () => ""},
             "./markdownClipboard": clipboard,
             "../runtimeCapabilities": {
                 getProtyleBlockDOMSanitizer: () => restricted ? value => value : undefined,

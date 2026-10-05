@@ -137,6 +137,7 @@ const importChildren = () => [
     node("importMarkdownZip", literal("Markdown .zip")),
     node("importMarkdownDoc", () => `Markdown ${window.siyuan.languages.doc}`),
     node("importMarkdownFolder", () => `Markdown ${window.siyuan.languages.folder}`),
+    node("importAIChat", lang("aiChatImportMenu")),
 ];
 
 const docTreeCommon = (multi = false) => [
@@ -342,6 +343,14 @@ const gutterTable = () => node("table", lang("tableBlock"), true, [
     node("deleteColumn", lang("delete-column")),
 ]);
 
+const gutterChatStyle = () => node("chatStyle", lang("aiChatStyle"), true, [
+    node("chatStyleUser", lang("aiChatSetUser")),
+    node("chatStyleAssistant", lang("aiChatSetAssistant")),
+    node("chatStyleThinking", lang("aiChatSetThinking")),
+    separator("separator_chatStyle"),
+    node("chatStyleClear", lang("aiChatClearRole")),
+]);
+
 const gutterBase = (multi: boolean) => [
     gutterTurnInto(multi),
     ...(multi ? [gutterHeadingTransform(), node("mergeSuperBlock", () => `${window.siyuan.languages.merge} ${window.siyuan.languages.superBlock}`, true, [
@@ -364,6 +373,7 @@ const gutterMultiple = () => [
     gutterLayout(),
     gutterWidth(),
     gutterHeight(),
+    gutterChatStyle(),
     separator("separator_quickMakeCard"),
     node("quickMakeCard", lang("quickMakeCard"), false),
     node("removeCard", lang("removeCard"), false),
@@ -483,6 +493,7 @@ const gutterSingle = () => [
     gutterLayout(true),
     gutterWidth(),
     gutterHeight(),
+    gutterChatStyle(),
     separator("separator_4"),
     node("wechatReminder", lang("wechatReminder"), false),
     node("quickMakeCard", lang("quickMakeCard"), false),

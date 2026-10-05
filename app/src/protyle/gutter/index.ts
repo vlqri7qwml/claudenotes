@@ -1440,6 +1440,7 @@ export class Gutter {
             this.genAlign(selectsElement, protyle);
             this.genWidths(selectsElement, protyle);
             this.genHeights(selectsElement, protyle);
+            this.genChatRole(selectsElement, protyle);
         }
         if (!window.siyuan.config.readonly && !isEncryptedBox(protyle.notebookId)) {
             window.siyuan.menus.menu.append(new MenuItem({
@@ -2906,6 +2907,7 @@ export class Gutter {
             this.genAlign([nodeElement], protyle);
             this.genWidths([nodeElement], protyle);
             this.genHeights([nodeElement], protyle);
+            this.genChatRole([nodeElement], protyle);
         }
         if (type !== "NodeThematicBreak" || !protyle.disabled) {
             window.siyuan.menus.menu.append(new MenuItem({id: "separator_4", type: "separator"}).element);
@@ -3400,6 +3402,50 @@ export class Gutter {
                     });
                 }
             }]),
+        }).element);
+    }
+
+    // AI 对话样式：把块显示为提问气泡、回答或思考过程，取消后恢复为普通块
+    private genChatRole(nodeElements: Element[], protyle: IProtyle) {
+        if (nodeElements.length === 0) {
+            return;
+        }
+        const currentRole = nodeElements.every(item =>
+            item.getAttribute(Constants.CUSTOM_SY_CHAT_ROLE) === nodeElements[0].getAttribute(Constants.CUSTOM_SY_CHAT_ROLE)) ?
+            nodeElements[0].getAttribute(Constants.CUSTOM_SY_CHAT_ROLE) : "";
+        const setRole = (role: string) => {
+            this.genClick(nodeElements, protyle, (e: HTMLElement) => {
+                if (role) {
+                    e.setAttribute(Constants.CUSTOM_SY_CHAT_ROLE, role);
+                } else {
+                    e.removeAttribute(Constants.CUSTOM_SY_CHAT_ROLE);
+                    e.removeAttribute(Constants.CUSTOM_SY_CHAT_SOURCE);
+                }
+            });
+        };
+        const roleItem = (id: string, role: string, label: string): IMenu => ({
+            id,
+            iconHTML: "",
+            label,
+            checked: currentRole === role,
+            click: () => setRole(role),
+        });
+        window.siyuan.menus.menu.append(new MenuItem({
+            id: "chatStyle",
+            icon: "iconChat",
+            label: window.siyuan.languages.aiChatStyle,
+            submenu: [
+                roleItem("chatStyleUser", "user", window.siyuan.languages.aiChatSetUser),
+                roleItem("chatStyleAssistant", "assistant", window.siyuan.languages.aiChatSetAssistant),
+                roleItem("chatStyleThinking", "thinking", window.siyuan.languages.aiChatSetThinking),
+                {id: "separator_chatStyle", type: "separator"},
+                {
+                    id: "chatStyleClear",
+                    icon: "iconClose",
+                    label: window.siyuan.languages.aiChatClearRole,
+                    click: () => setRole(""),
+                },
+            ],
         }).element);
     }
 

@@ -1,6 +1,7 @@
 @use "util/mixin" as *;
 @use "component/tooltips" as *;
 @use "protyle/wysiwyg" as *;
+@use "protyle/ai_chat" as *; // 需在编辑器块样式之后，覆盖超级块的默认内边距
 @use "component/typography" as *;
 @use "protyle/attr" as *;
 @use "protyle/mindmap-view" as *;

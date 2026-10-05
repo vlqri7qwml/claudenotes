@@ -40,6 +40,7 @@ type System struct {
 	NetworkProxy    *NetworkProxy `json:"networkProxy"`
 
 	DownloadInstallPkg bool   `json:"downloadInstallPkg"`
+	CloudService       bool   `json:"cloudService"` // 是否开启思源官方云端服务（账号、云端同步、集市、更新、公告等），ClaudeNotes 默认关闭
 	UpdateChannel      string `json:"updateChannel,omitempty"`
 	AutoLaunch2        int    `json:"autoLaunch2"`    // 0：不自动启动，1：自动启动，2：自动启动+隐藏主窗口
 	LockScreenMode     int    `json:"lockScreenMode"` // 0：手动，1：手动+跟随系统 https://github.com/siyuan-note/siyuan/issues/9087

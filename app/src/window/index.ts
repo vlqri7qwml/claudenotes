@@ -44,6 +44,7 @@ import {emitToPlugins} from "../plugin/EventBusCore";
 import {initializeEnglishCommandTranslations} from "../command/english";
 import {loadLanguages} from "../boot/loadLanguages";
 import {installPluginStorageFetchAppId} from "../util/fetchAppId";
+import {applyCloudServiceState} from "../util/cloudService";
 
 class App {
     public plugins: import("../plugin").Plugin[] = [];
@@ -225,6 +226,7 @@ class App {
             await addScriptSync(`${Constants.PROTYLE_CDN}/js/lute/lute.min.js?v=${Constants.SIYUAN_VERSION}`, "protyleLuteScript");
             addScript(`${Constants.PROTYLE_CDN}/js/protyle-html.js?v=${Constants.SIYUAN_VERSION}`, "protyleWcHtmlScript");
             window.siyuan.config = systemConfig(response.data.conf, () => structuredClone(Constants.SIYUAN_EMPTY_LAYOUT));
+            applyCloudServiceState();
             await loadDesktopHostConnection();
             ensureUILayout();
             setBodyHighlight();

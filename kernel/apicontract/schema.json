@@ -19695,6 +19695,18 @@
       ],
       "additionalProperties": false
     },
+    "CloudServiceRequestInput": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "enabled"
+      ],
+      "additionalProperties": false
+    },
     "CloudSpaceData": {
       "type": "object",
       "properties": {
@@ -47763,6 +47775,9 @@
         "autoLaunch2": {
           "type": "integer"
         },
+        "cloudService": {
+          "type": "boolean"
+        },
         "confDir": {
           "type": "string"
         },
@@ -47847,6 +47862,7 @@
       "required": [
         "appDir",
         "autoLaunch2",
+        "cloudService",
         "confDir",
         "container",
         "dataDir",
@@ -159421,6 +159437,81 @@
       "body": "json",
       "request": {
         "$ref": "#/$defs/AutoLaunchRequestInput"
+      },
+      "response": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "integer",
+                "enum": [
+                  0
+                ]
+              },
+              "data": {
+                "type": "null"
+              },
+              "msg": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "code",
+              "msg",
+              "data"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "integer",
+                "enum": [
+                  -1
+                ]
+              },
+              "data": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "closeTimeout": {
+                        "type": "number"
+                      }
+                    },
+                    "required": [
+                      "closeTimeout"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "msg": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "code",
+              "msg",
+              "data"
+            ],
+            "additionalProperties": true
+          }
+        ]
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/system/setCloudService",
+      "handler": "setCloudService",
+      "body": "json",
+      "request": {
+        "$ref": "#/$defs/CloudServiceRequestInput"
       },
       "response": {
         "anyOf": [

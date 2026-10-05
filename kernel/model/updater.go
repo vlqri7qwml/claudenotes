@@ -25,7 +25,6 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"strings"
 	"sync"
 	"time"
 
@@ -241,6 +240,11 @@ func CheckUpdate(showMsg bool) {
 		return
 	}
 
+	if !util.IsCloudServiceEnabled() {
+		util.PushMsg(cloudServiceDisabledMsg(), 5000)
+		return
+	}
+
 	release, err := getUpdateRelease(showMsg)
 	if err != nil {
 		return
@@ -266,27 +270,7 @@ func isVersionUpToDate(releaseVer string) bool {
 	return semver.Compare("v"+releaseVer, "v"+util.Ver) <= 0
 }
 
-// skipInstallPkgPlatformCached 缓存平台相关判断，-1 未初始化，0 表示不跳过，1 表示跳过
-var skipInstallPkgPlatformCached = -1
-
 func skipNewVerInstallPkg() bool {
-	if skipInstallPkgPlatformCached == -1 {
-		skipInstallPkgPlatformCached = 0
-		if !gulu.OS.IsWindows() && !gulu.OS.IsDarwin() {
-			skipInstallPkgPlatformCached = 1
-		} else if util.ISMicrosoftStore || util.ContainerStd != util.Container {
-			skipInstallPkgPlatformCached = 1
-		} else if gulu.OS.IsWindows() {
-			plat := strings.ToLower(Conf.System.OSPlatform)
-			// Windows 7, 8 and Server 2012 are no longer supported https://github.com/siyuan-note/siyuan/issues/7347
-			if strings.Contains(plat, " 7 ") || strings.Contains(plat, " 8 ") || strings.Contains(plat, "2012") {
-				skipInstallPkgPlatformCached = 1
-			}
-		}
-	}
-
-	if skipInstallPkgPlatformCached == 1 || !Conf.System.DownloadInstallPkg {
-		return true
-	}
-	return false
+	// ClaudeNotes 不自动下载官方思源安装包：官方安装包是另一个软件，安装后不会升级 ClaudeNotes
+	return true
 }

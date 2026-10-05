@@ -23,6 +23,9 @@ func IsChinaCloud() bool {
 }
 
 func GetCloudServer() string {
+	if !IsCloudServiceEnabled() {
+		return CloudServiceDisabledServer
+	}
 	if 0 == CurrentCloudRegion {
 		return chinaServer
 	}
@@ -30,6 +33,9 @@ func GetCloudServer() string {
 }
 
 func GetCloudWebSocketServer() string {
+	if !IsCloudServiceEnabled() {
+		return "ws://127.0.0.1:9"
+	}
 	if 0 == CurrentCloudRegion {
 		return chinaWebSocketServer
 	}
@@ -37,6 +43,9 @@ func GetCloudWebSocketServer() string {
 }
 
 func GetCloudSyncServer() string {
+	if !IsCloudServiceEnabled() {
+		return CloudServiceDisabledServer + "/"
+	}
 	if 0 == CurrentCloudRegion {
 		return chinaSyncServer
 	}
@@ -44,6 +53,9 @@ func GetCloudSyncServer() string {
 }
 
 func GetCloudAssetsServer() string {
+	if !IsCloudServiceEnabled() {
+		return CloudServiceDisabledServer + "/"
+	}
 	if 0 == CurrentCloudRegion {
 		return chinaCloudAssetsServer
 	}
@@ -51,6 +63,9 @@ func GetCloudAssetsServer() string {
 }
 
 func GetCloudAccountServer() string {
+	if !IsCloudServiceEnabled() {
+		return CloudServiceDisabledServer
+	}
 	if 0 == CurrentCloudRegion {
 		return chinaAccountServer
 	}
@@ -58,6 +73,9 @@ func GetCloudAccountServer() string {
 }
 
 func GetCloudForumAssetsServer() string {
+	if !IsCloudServiceEnabled() {
+		return CloudServiceDisabledServer + "/"
+	}
 	if 0 == CurrentCloudRegion {
 		return chinaForumAssetsServer
 	}

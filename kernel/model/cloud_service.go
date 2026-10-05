@@ -269,12 +269,18 @@ var (
 )
 
 func RefreshCheckJob2H() {
+	if !util.IsCloudServiceEnabled() {
+		return
+	}
 	go refreshSubscriptionExpirationRemind()
 	go refreshUser()
 	go refreshAnnouncement()
 }
 
 func RefreshCheckJob6H() {
+	if !util.IsCloudServiceEnabled() {
+		return
+	}
 	go refreshCheckDownloadInstallPkg()
 }
 
@@ -825,6 +831,12 @@ func CheckActivationcode(code string) (retCode int, msg string) {
 }
 
 func Login(userName, password, captcha string, cloudRegion int) (ret *gulu.Result) {
+	if !util.IsCloudServiceEnabled() {
+		ret = gulu.Ret.NewResult()
+		ret.Code = -1
+		ret.Msg = cloudServiceDisabledMsg()
+		return
+	}
 	release := lockAssetSourceChange()
 	defer release()
 	previousCloudRegion := util.CurrentCloudRegion

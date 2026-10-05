@@ -1,4 +1,10 @@
 {
+	"cloudService": "Clouddienst",
+	"cloudServiceTip": "Ingeschakeld zijn het officiële SiYuan-account, cloudsynchronisatie, de marktplaats, updatecontrole en aankondigingen beschikbaar; uitgeschakeld wordt geen enkele officiële server benaderd en blijven notities op dit apparaat",
+	"cloudServiceTurnOn": "Clouddienst inschakelen",
+	"cloudServiceTurnOff": "Clouddienst uitschakelen",
+	"cloudServiceTurnedOn": "Clouddienst is ingeschakeld",
+	"cloudServiceTurnedOff": "Clouddienst is uitgeschakeld, notities blijven op dit apparaat",
 	"mindmapItem": "Mindmap-itemblok",
 	"listMindmapLock": "Weergave vergrendelen",
 	"listMindmapUnlock": "Weergave ontgrendelen",
@@ -3002,6 +3008,7 @@
 		"406": "Archivering mislukt. De oorspronkelijke gegevens zijn bewaard; controleer vrije ruimte, machtigingen en het downloaden van bronnen",
 		"407": "Archiveer alle herstelgegevens van versleutelde notitieboeken voordat u versleuteling uitschakelt",
 		"408": "DNS-resolutie mislukt. Controleer uw netwerk-, DNS- of proxyinstellingen",
-		"409": "De netwerkverbinding is onderbroken of kon niet tot stand worden gebracht. Controleer uw netwerk-, proxy- of firewallinstellingen"
+		"409": "De netwerkverbinding is onderbroken of kon niet tot stand worden gebracht. Controleer uw netwerk-, proxy- of firewallinstellingen",
+		"410": "De clouddienst is uitgeschakeld. U kunt deze inschakelen via Instellingen - Account en synchronisatie"
 	}
 }

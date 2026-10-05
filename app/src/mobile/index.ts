@@ -73,6 +73,7 @@ import {initializeEnglishCommandTranslations} from "../command/english";
 import {loadLanguages} from "../boot/loadLanguages";
 import {scrollInputIntoView} from "./util/visibleViewport";
 import {installPluginStorageFetchAppId} from "../util/fetchAppId";
+import {applyCloudServiceState} from "../util/cloudService";
 
 class App {
     public plugins: import("../plugin").Plugin[] = [];
@@ -190,6 +191,7 @@ class App {
             await addScriptSync(`${Constants.PROTYLE_CDN}/js/lute/lute.min.js?v=${Constants.SIYUAN_VERSION}`, "protyleLuteScript");
             addScript(`${Constants.PROTYLE_CDN}/js/protyle-html.js?v=${Constants.SIYUAN_VERSION}`, "protyleWcHtmlScript");
             window.siyuan.config = systemConfig(confResponse.data.conf);
+            applyCloudServiceState();
             window.siyuan.isPublish = confResponse.data.isPublish;
             document.body.classList.toggle("body--android", Boolean(isInAndroid()));
             correctHotkey(siyuanApp);

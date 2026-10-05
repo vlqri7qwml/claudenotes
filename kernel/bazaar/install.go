@@ -41,6 +41,9 @@ var packageInstallLock sync.Mutex
 
 // downloadBazaarFile 下载集市文件
 func downloadBazaarFile(repoURLHash string, pushProgress bool) (data []byte, err error) {
+	if !util.IsCloudServiceEnabled() {
+		return nil, util.ErrCloudServiceDisabled
+	}
 	repoURLHashTrimmed := strings.TrimPrefix(repoURLHash, "https://github.com/")
 	v, err, _ := downloadPackageFlight.Do(repoURLHash, func() (any, error) {
 		// repoURLHash: https://github.com/88250/Comfortably-Numb@6286912c381ef3f83e455d06ba4d369c498238dc 或带路径 /README.md

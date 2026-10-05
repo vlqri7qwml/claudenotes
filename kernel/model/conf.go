@@ -874,6 +874,9 @@ func InitConf() {
 
 	Conf.Save()
 
+	// 云端服务开关：未开启时内核不访问思源官方云端
+	util.SetCloudServiceEnabled(Conf.System.CloudService)
+
 	// 安全模式：渲染进程崩溃恢复后由桌面端主进程通过 --safe-mode 注入。
 	// safeMode 是纯运行时状态，不随 conf.json 持久化（Save 时会被排除），故每次启动都按 util.SafeMode 重新赋值。
 	Conf.System.SafeMode = util.SafeMode

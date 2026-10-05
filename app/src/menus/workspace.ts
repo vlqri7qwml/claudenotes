@@ -38,6 +38,7 @@ import {isBrowser} from "../util/functions";
 import {openRecentDocs} from "../business/openRecentDocs";
 import {openDataMigration} from "./dataMigration";
 import {openLink} from "../editor/openLink";
+import {setCloudService} from "../util/cloudService";
 import {adjustEditorFontSize} from "../util/editorFontSize";
 import {getHostCapabilities} from "../util/hostCapabilities";
 import {openTemplateManager} from "../template/manager";
@@ -454,6 +455,16 @@ export const workspaceMenu = async (app: App, rect: DOMRect) => {
                     }
                 }).element);
             }
+            // ClaudeNotes：一键开启 / 关闭思源官方云端服务
+            window.siyuan.menus.menu.append(new MenuItem({
+                id: "cloudService",
+                label: window.siyuan.config.system.cloudService ? window.siyuan.languages.cloudServiceTurnOff :
+                    window.siyuan.languages.cloudServiceTurnOn,
+                icon: "iconCloud",
+                click: () => {
+                    setCloudService(!window.siyuan.config.system.cloudService);
+                }
+            }).element);
             window.siyuan.menus.menu.append(new MenuItem({
                 id: "lockScreen",
                 label: window.siyuan.languages.lockScreen,

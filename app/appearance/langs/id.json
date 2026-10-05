@@ -1,4 +1,10 @@
 {
+	"cloudService": "Layanan cloud",
+	"cloudServiceTip": "Saat aktif, akun resmi SiYuan, sinkronisasi cloud, marketplace, pemeriksaan pembaruan, dan pengumuman tersedia; saat nonaktif, tidak ada server resmi yang dihubungi dan catatan tetap di perangkat ini",
+	"cloudServiceTurnOn": "Aktifkan layanan cloud",
+	"cloudServiceTurnOff": "Nonaktifkan layanan cloud",
+	"cloudServiceTurnedOn": "Layanan cloud aktif",
+	"cloudServiceTurnedOff": "Layanan cloud nonaktif, catatan tetap di perangkat ini",
 	"mindmapItem": "Blok item peta pikiran",
 	"listMindmapLock": "Kunci tampilan",
 	"listMindmapUnlock": "Buka kunci tampilan",
@@ -3002,6 +3008,7 @@
 		"406": "Pengarsipan gagal. Data asli tetap disimpan; periksa ruang kosong, izin, dan unduhan sumber daya",
 		"407": "Arsipkan semua data pemulihan buku catatan terenkripsi sebelum menonaktifkan enkripsi",
 		"408": "Resolusi DNS gagal. Periksa pengaturan jaringan, DNS, atau proksi",
-		"409": "Koneksi jaringan terputus atau tidak dapat dibuat. Periksa pengaturan jaringan, proksi, atau firewall"
+		"409": "Koneksi jaringan terputus atau tidak dapat dibuat. Periksa pengaturan jaringan, proksi, atau firewall",
+		"410": "Layanan cloud dinonaktifkan. Anda dapat mengaktifkannya di Pengaturan - Akun & Sinkronisasi"
 	}
 }

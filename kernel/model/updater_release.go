@@ -79,6 +79,9 @@ var (
 )
 
 func getUpdateRelease(force bool) (*updateRelease, error) {
+	if !util.IsCloudServiceEnabled() {
+		return nil, util.ErrCloudServiceDisabled
+	}
 	channel := Conf.System.UpdateChannel
 	if conf.UpdateChannelStable == channel {
 		return getStableUpdateRelease(force)

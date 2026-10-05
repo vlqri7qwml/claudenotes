@@ -180,6 +180,9 @@ func fetchBazaarIndex(ctx context.Context) (ret *bazaarIndexSnapshot, err error)
 }
 
 func fetchBazaarIndexPath(ctx context.Context, indexPath string) (ret *bazaarIndexSnapshot, err error) {
+	if !util.IsCloudServiceEnabled() {
+		return nil, util.ErrCloudServiceDisabled
+	}
 	timeBucket := bazaarIndexNow().Unix() / int64(bazaarIndexCDNBucket/time.Second)
 	u := fmt.Sprintf("%s%s?t=%d", bazaarIndexStatServer, indexPath, timeBucket)
 	buf := &bytes.Buffer{}

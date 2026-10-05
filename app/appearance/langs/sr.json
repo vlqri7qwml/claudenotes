@@ -1,4 +1,10 @@
 {
+	"cloudService": "Usluga u oblaku",
+	"cloudServiceTip": "Kada je uključeno, dostupni su zvanični SiYuan nalog, sinhronizacija u oblaku, prodavnica, provera ažuriranja i obaveštenja; kada je isključeno, ne pristupa se nijednom zvaničnom serveru i beleške ostaju na ovom uređaju",
+	"cloudServiceTurnOn": "Uključi uslugu u oblaku",
+	"cloudServiceTurnOff": "Isključi uslugu u oblaku",
+	"cloudServiceTurnedOn": "Usluga u oblaku je uključena",
+	"cloudServiceTurnedOff": "Usluga u oblaku je isključena, beleške ostaju na ovom uređaju",
 	"mindmapItem": "Blok stavke mape uma",
 	"listMindmapLock": "Закључај приказ",
 	"listMindmapUnlock": "Откључај приказ",
@@ -3002,6 +3008,7 @@
 		"406": "Архивирање није успело. Изворни подаци су сачувани; проверите слободан простор, дозволе и преузимање ресурса",
 		"407": "Пре искључивања шифровања архивирајте све податке за опоравак шифрованих бележница",
 		"408": "Разрешавање DNS имена није успело. Проверите подешавања мреже, DNS-а или проксија",
-		"409": "Мрежна веза је прекинута или се не може успоставити. Проверите подешавања мреже, проксија или заштитног зида"
+		"409": "Мрежна веза је прекинута или се не може успоставити. Проверите подешавања мреже, проксија или заштитног зида",
+		"410": "Usluga u oblaku je isključena. Možete je uključiti u Podešavanja - Nalog i sinhronizacija"
 	}
 }

@@ -357,6 +357,9 @@ func requestBazaarPackageUserRatings(ctx context.Context, token string, packageN
 }
 
 func requestBazaarPackageRating[T any](ctx context.Context, endpoint string, body map[string]any, data *T) error {
+	if !util.IsCloudServiceEnabled() {
+		return util.ErrCloudServiceDisabled
+	}
 	token, _ := body["token"].(string)
 	invalidUser := cloudAccountAuthFailureHandler(token)
 	result := bazaarRatingCloudResult[T]{}

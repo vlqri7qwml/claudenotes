@@ -2024,6 +2024,10 @@ declare namespace Config {
          */
         downloadInstallPkg: boolean;
         /**
+         * 是否开启思源官方云端服务（账号、云端同步、集市、更新检查、公告等），ClaudeNotes 默认关闭
+         */
+        cloudService: boolean;
+        /**
          * 更新通道
          */
         updateChannel?: string;

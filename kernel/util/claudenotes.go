@@ -17,8 +17,10 @@
 package util
 
 import (
+	"errors"
 	"os"
 	"path/filepath"
+	"sync/atomic"
 
 	"github.com/88250/gulu"
 )
@@ -55,4 +57,23 @@ func DefaultWorkspaceDir() string {
 		return filepath.Join(HomeDir, "Library", "Application Support", ProductName)
 	}
 	return filepath.Join(HomeDir, ProductName)
+}
+
+// CloudServiceDisabledServer 是云端服务关闭时各云端地址的替代值：本机 discard 端口，请求会立即失败而不会出网。
+const CloudServiceDisabledServer = "http://127.0.0.1:9"
+
+// ErrCloudServiceDisabled 表示云端服务已关闭。
+var ErrCloudServiceDisabled = errors.New("cloud service is disabled")
+
+var cloudServiceEnabled atomic.Bool
+
+// SetCloudServiceEnabled 设置是否开启思源官方云端服务（账号、云端同步、集市、更新、公告、云端收集箱等），由配置
+// system.cloudService 驱动。ClaudeNotes 默认关闭。
+func SetCloudServiceEnabled(enabled bool) {
+	cloudServiceEnabled.Store(enabled)
+}
+
+// IsCloudServiceEnabled 返回是否开启了思源官方云端服务。
+func IsCloudServiceEnabled() bool {
+	return cloudServiceEnabled.Load()
 }

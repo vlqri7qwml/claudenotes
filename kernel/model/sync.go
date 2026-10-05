@@ -393,6 +393,13 @@ func checkSync(boot, exit, byHand bool) bool {
 		return false
 	}
 
+	if !util.IsCloudServiceEnabled() && isRemoteSyncProvider() {
+		if byHand {
+			util.PushMsg(cloudServiceDisabledMsg(), 5000)
+		}
+		return false
+	}
+
 	if conf.ProviderS3 != Conf.Sync.Provider && !cloud.IsValidCloudDirName(Conf.Sync.CloudName) {
 		if byHand {
 			util.PushMsg(Conf.Language(123), 5000)

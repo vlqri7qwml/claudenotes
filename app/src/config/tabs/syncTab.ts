@@ -12,6 +12,7 @@ import {genConfigItemMainHtml, genConfigItemName} from "../render/fragments";
 import {getLANSyncSearchAvailability, getSyncProviderConfigKeywords} from "./syncUi";
 import {mountLANSyncStatus, mountSyncAssetDownloadMode, mountSyncProvider} from "./syncRuntime";
 import {openHistory} from "../../history/history";
+import {setCloudService} from "../../util/cloudService";
 
 const registerSyncGroup = (tab: SettingTabBuilder) => {
     const group = tab.group("sync", window.siyuan.languages.configGroupSync);
@@ -261,7 +262,17 @@ const mountRepoKey = (root: HTMLElement) => {
     });
 };
 
+const registerCloudServiceGroup = (tab: SettingTabBuilder) => {
+    const group = tab.group("cloudService", window.siyuan.languages.cloudService);
+    group.switch("system.cloudService", {
+        title: window.siyuan.languages.cloudService,
+        desc: window.siyuan.languages.cloudServiceTip,
+        save: (value) => setCloudService(Boolean(value)),
+    });
+};
+
 export const registerSyncTab = (tab: SettingTabBuilder) => {
+    registerCloudServiceGroup(tab);
     registerAccountGroup(tab);
     registerSyncGroup(tab);
     registerRepoGroup(tab);

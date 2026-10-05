@@ -3105,6 +3105,10 @@ func newRepositoryWithAssetSourceLocked() (ret *dejavu.Repo, err error) {
 		err = fmt.Errorf("unknown cloud provider [%d]", Conf.Sync.Provider)
 		return
 	}
+	if !util.IsCloudServiceEnabled() && isRemoteSyncProvider() {
+		// 云端服务关闭时本地快照照常可用，远端操作直接返回错误，不会出网
+		cloudRepo = &cloudServiceDisabledCloud{Cloud: cloudRepo}
+	}
 
 	ignoreLines, err := getSyncIgnoreLines()
 	if err != nil {

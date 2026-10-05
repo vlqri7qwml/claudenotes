@@ -1325,6 +1325,11 @@ var setDownloadInstallPkg = contractHandler(apicontract.SetDownloadInstallPkg, f
 	return apicontract.Success(apicontract.Null{})
 })
 
+var setCloudService = contractHandler(apicontract.SetCloudService, func(c *gin.Context, request apicontract.CloudServiceRequest) apicontract.Response[apicontract.Null] {
+	model.SetCloudService(request.Enabled)
+	return apicontract.Success(apicontract.Null{})
+})
+
 var setUpdateChannel = contractHandler(apicontract.SetUpdateChannel, func(c *gin.Context, request apicontract.UpdateChannelRequest) apicontract.Response[apicontract.Null] {
 	if err := model.SetUpdateChannel(request.UpdateChannel); err != nil {
 		return apicontract.Failure[apicontract.Null](-1, err.Error())

@@ -1,4 +1,10 @@
 {
+	"cloudService": "Servizio cloud",
+	"cloudServiceTip": "Se attivo, sono disponibili l'account ufficiale SiYuan, la sincronizzazione cloud, il marketplace, il controllo degli aggiornamenti e gli annunci; se disattivato, non viene contattato alcun server ufficiale e le note restano su questo dispositivo",
+	"cloudServiceTurnOn": "Attiva il servizio cloud",
+	"cloudServiceTurnOff": "Disattiva il servizio cloud",
+	"cloudServiceTurnedOn": "Il servizio cloud è attivo",
+	"cloudServiceTurnedOff": "Il servizio cloud è disattivato, le note restano su questo dispositivo",
 	"mindmapItem": "Blocco elemento della mappa mentale",
 	"listMindmapLock": "Blocca vista",
 	"listMindmapUnlock": "Sblocca vista",
@@ -3002,6 +3008,7 @@
 		"406": "Archiviazione non riuscita. I dati originali sono stati conservati; controlla spazio disponibile, autorizzazioni e download delle risorse",
 		"407": "Archivia tutti i dati di recupero dei quaderni cifrati prima di disattivare la cifratura",
 		"408": "Risoluzione DNS non riuscita. Controlla le impostazioni di rete, DNS o proxy",
-		"409": "La connessione di rete è stata interrotta o non è stato possibile stabilirla. Controlla le impostazioni di rete, proxy o firewall"
+		"409": "La connessione di rete è stata interrotta o non è stato possibile stabilirla. Controlla le impostazioni di rete, proxy o firewall",
+		"410": "Il servizio cloud è disattivato. Puoi attivarlo in Impostazioni - Account e Sincronizzazione"
 	}
 }

@@ -40,6 +40,12 @@ type DownloadInstallPkgRequest struct {
 	DownloadInstallPkg bool `json:"downloadInstallPkg"`
 }
 
+// CloudServiceRequest 开启或关闭思源官方云端服务（账号、云端同步、集市、更新检查、公告等）。
+// 关闭后内核不访问任何官方云端地址，本地数据快照、导入导出等本地功能不受影响。
+type CloudServiceRequest struct {
+	Enabled bool `json:"enabled"`
+}
+
 type UpdateChannelRequest struct {
 	UpdateChannel string `json:"updateChannel"`
 }

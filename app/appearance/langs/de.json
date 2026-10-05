@@ -1,4 +1,10 @@
 {
+	"cloudService": "Cloud-Dienst",
+	"cloudServiceTip": "Wenn aktiviert, stehen das offizielle SiYuan-Konto, Cloud-Synchronisierung, Marktplatz, Update-Prüfung und Ankündigungen zur Verfügung; wenn deaktiviert, wird kein offizieller Server kontaktiert und Notizen bleiben auf diesem Gerät",
+	"cloudServiceTurnOn": "Cloud-Dienst aktivieren",
+	"cloudServiceTurnOff": "Cloud-Dienst deaktivieren",
+	"cloudServiceTurnedOn": "Cloud-Dienst ist aktiviert",
+	"cloudServiceTurnedOff": "Cloud-Dienst ist deaktiviert, Notizen bleiben auf diesem Gerät",
 	"mindmapItem": "Mindmap-Eintragsblock",
 	"listMindmapLock": "Ansicht sperren",
 	"listMindmapUnlock": "Ansicht entsperren",
@@ -3002,6 +3008,7 @@
 		"406": "Archivierung fehlgeschlagen. Die Originaldaten bleiben erhalten; freien Speicherplatz, Berechtigungen und Ressourcendownloads prüfen",
 		"407": "Vor dem Deaktivieren der Verschlüsselung alle Wiederherstellungsdaten verschlüsselter Notizbücher archivieren",
 		"408": "DNS-Auflösung fehlgeschlagen. Bitte prüfen Sie Ihre Netzwerk-, DNS- oder Proxy-Einstellungen",
-		"409": "Die Netzwerkverbindung wurde unterbrochen oder konnte nicht hergestellt werden. Bitte prüfen Sie Ihre Netzwerk-, Proxy- oder Firewall-Einstellungen"
+		"409": "Die Netzwerkverbindung wurde unterbrochen oder konnte nicht hergestellt werden. Bitte prüfen Sie Ihre Netzwerk-, Proxy- oder Firewall-Einstellungen",
+		"410": "Der Cloud-Dienst ist deaktiviert. Sie können ihn unter Einstellungen - Konto & Synchronisierung aktivieren"
 	}
 }

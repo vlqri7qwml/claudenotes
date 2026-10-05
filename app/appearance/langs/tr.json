@@ -1,4 +1,10 @@
 {
+	"cloudService": "Bulut hizmeti",
+	"cloudServiceTip": "Açıkken resmi SiYuan hesabı, bulut senkronizasyonu, pazar yeri, güncelleme denetimi ve duyurular kullanılabilir; kapalıyken hiçbir resmi sunucuya bağlanılmaz ve notlar bu cihazda kalır",
+	"cloudServiceTurnOn": "Bulut hizmetini aç",
+	"cloudServiceTurnOff": "Bulut hizmetini kapat",
+	"cloudServiceTurnedOn": "Bulut hizmeti açık",
+	"cloudServiceTurnedOff": "Bulut hizmeti kapalı, notlar bu cihazda kalır",
 	"mindmapItem": "Zihin haritası öğesi bloğu",
 	"listMindmapLock": "Görünümü kilitle",
 	"listMindmapUnlock": "Görünümün kilidini aç",
@@ -3002,6 +3008,7 @@
 		"406": "Arşivleme başarısız. Özgün veriler korundu; boş alanı, izinleri ve kaynak indirmelerini kontrol edin",
 		"407": "Şifrelemeyi kapatmadan önce tüm şifreli not defteri kurtarma verilerini arşivleyin",
 		"408": "DNS çözümlemesi başarısız oldu. Ağ, DNS veya vekil sunucu ayarlarınızı kontrol edin",
-		"409": "Ağ bağlantısı kesildi veya kurulamadı. Ağ, vekil sunucu veya güvenlik duvarı ayarlarınızı kontrol edin"
+		"409": "Ağ bağlantısı kesildi veya kurulamadı. Ağ, vekil sunucu veya güvenlik duvarı ayarlarınızı kontrol edin",
+		"410": "Bulut hizmeti kapalı. Ayarlar - Hesap ve Senkronizasyon bölümünden açabilirsiniz"
 	}
 }

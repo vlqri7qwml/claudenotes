@@ -41,16 +41,7 @@ const registerAboutVersionGroup = (tab: SettingTabBuilder) => {
             save: (value) => sendAppSetting("system.updateChannel", value),
         });
     }
-    /// #if !BROWSER
-    if (!window.siyuan.config.system.isMicrosoftStore && getHostCapabilities().ownsKernel &&
-        window.siyuan.config.system.container === "std" && window.siyuan.config.system.os !== "linux") {
-        group.switch("system.downloadInstallPkg", {
-            title: window.siyuan.languages.autoDownloadUpdatePkg,
-            desc: window.siyuan.languages.autoDownloadUpdatePkgTip,
-            save: (value) => sendAppSetting("system.downloadInstallPkg", value),
-        });
-    }
-    /// #endif
+    // ClaudeNotes 不自动下载官方思源安装包，因此不提供「自动下载更新安装包」开关
 };
 
 const genAboutVersionHtml = (): string => {

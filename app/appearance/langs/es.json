@@ -1,4 +1,10 @@
 {
+	"cloudService": "Servicio en la nube",
+	"cloudServiceTip": "Activado, están disponibles la cuenta oficial de SiYuan, la sincronización en la nube, el mercado, la búsqueda de actualizaciones y los anuncios; desactivado, no se contacta con ningún servidor oficial y las notas permanecen en este dispositivo",
+	"cloudServiceTurnOn": "Activar el servicio en la nube",
+	"cloudServiceTurnOff": "Desactivar el servicio en la nube",
+	"cloudServiceTurnedOn": "El servicio en la nube está activado",
+	"cloudServiceTurnedOff": "El servicio en la nube está desactivado, las notas permanecen en este dispositivo",
 	"mindmapItem": "Bloque de elemento de mapa mental",
 	"listMindmapLock": "Bloquear vista",
 	"listMindmapUnlock": "Desbloquear vista",
@@ -3002,6 +3008,7 @@
 		"406": "Error al archivar. Se han conservado los datos originales; compruebe el espacio libre, los permisos y las descargas de recursos",
 		"407": "Archive todos los datos de recuperación de cuadernos cifrados antes de desactivar el cifrado",
 		"408": "La resolución DNS ha fallado. Compruebe la configuración de red, DNS o proxy",
-		"409": "La conexión de red se ha interrumpido o no se ha podido establecer. Compruebe la configuración de red, proxy o cortafuegos"
+		"409": "La conexión de red se ha interrumpido o no se ha podido establecer. Compruebe la configuración de red, proxy o cortafuegos",
+		"410": "El servicio en la nube está desactivado. Puede activarlo en Configuración - Cuenta y Sincronización"
 	}
 }

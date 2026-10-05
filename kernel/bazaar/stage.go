@@ -198,6 +198,10 @@ func isBazaarOnline() bool {
 }
 
 func isBazaarOnline0() (ret bool) {
+	if !util.IsCloudServiceEnabled() {
+		// 云端服务关闭时集市按离线处理，不访问集市服务器
+		return false
+	}
 	// Improve marketplace loading when offline https://github.com/siyuan-note/siyuan/issues/12050
 	ret = util.IsOnline(util.BazaarOSSServer+"/204", true, 3000)
 	return

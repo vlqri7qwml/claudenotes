@@ -1,4 +1,10 @@
 {
+	"cloudService": "Cloud service",
+	"cloudServiceTip": "When on, the official SiYuan account, cloud sync, marketplace, update checks and announcements are available; when off, no official server is contacted and notes stay on this device",
+	"cloudServiceTurnOn": "Turn on cloud service",
+	"cloudServiceTurnOff": "Turn off cloud service",
+	"cloudServiceTurnedOn": "Cloud service is on",
+	"cloudServiceTurnedOff": "Cloud service is off, notes stay on this device",
 	"mindmapItem": "Mind map item block",
 	"listMindmapLock": "Lock view",
 	"listMindmapUnlock": "Unlock view",
@@ -3002,6 +3008,7 @@
 		"406": "The archive operation failed. Original data has been preserved; check available space, permissions, and resource downloads",
 		"407": "Archive all encrypted notebook recovery dependencies before disabling encryption",
 		"408": "DNS resolution failed, please check your network, DNS, or proxy settings",
-		"409": "The network connection was interrupted or could not be established, please check your network, proxy, or firewall settings"
+		"409": "The network connection was interrupted or could not be established, please check your network, proxy, or firewall settings",
+		"410": "Cloud service is turned off. You can turn it on in Settings - Account & Sync"
 	}
 }

@@ -405,6 +405,9 @@ func snapshotBazaarRatingRegion(region int, now time.Time) (ret bazaarRatingRegi
 }
 
 func fetchBazaarRatingRegion(ctx context.Context, region int) (ret map[string]bazaarRatingDistribution, err error) {
+	if !util.IsCloudServiceEnabled() {
+		return nil, util.ErrCloudServiceDisabled
+	}
 	if region < 0 || bazaarRatingRegionCount <= region {
 		return nil, errors.New("invalid bazaar rating region")
 	}

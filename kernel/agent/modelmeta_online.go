@@ -29,6 +29,7 @@ import (
 
 	"github.com/siyuan-note/httpclient"
 	"github.com/siyuan-note/logging"
+	"github.com/siyuan-note/siyuan/kernel/util"
 )
 
 const (
@@ -138,6 +139,10 @@ func (catalog *modelsDevContextCatalog) contextLimit(providerBaseURL, model stri
 }
 
 func refreshModelsDevContextCatalogAsync() {
+	if !util.IsCloudServiceEnabled() {
+		// 云端服务关闭时不访问 models.dev，上下文窗口回退到模型配置与内置表
+		return
+	}
 	modelsDevState.Lock()
 	if modelsDevState.refreshing {
 		modelsDevState.Unlock()

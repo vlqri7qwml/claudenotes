@@ -1,0 +1,9 @@
+// ClaudeNotes：云端服务关闭时隐藏思源官方云端相关入口（同步按钮、订阅标识、引导卡片中的登录同步）
+html[data-cloud-service="off"] {
+  #barSync,
+  #toolbarSync,
+  #toolbarVIP,
+  .onboarding [data-type="sync"] {
+    display: none;
+  }
+}

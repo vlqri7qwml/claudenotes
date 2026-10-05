@@ -127,6 +127,7 @@ type SystemSystem struct {
 	NetworkServeTLS                   bool                `json:"networkServeTLS" api:"optional,nullable"`
 	NetworkProxy                      *SystemNetworkProxy `json:"networkProxy" api:"optional,nullable"`
 	DownloadInstallPkg                bool                `json:"downloadInstallPkg" api:"optional,nullable"`
+	CloudService                      bool                `json:"cloudService" api:"optional,nullable"`
 	UpdateChannel                     string              `json:"updateChannel,omitempty" api:"optional,nullable"`
 	AutoLaunch2                       int                 `json:"autoLaunch2" api:"optional,nullable"`
 	LockScreenMode                    int                 `json:"lockScreenMode" api:"optional,nullable"`

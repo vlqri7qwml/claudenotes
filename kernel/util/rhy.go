@@ -40,6 +40,9 @@ var (
 )
 
 func RefreshRhyResultJob() {
+	if !IsCloudServiceEnabled() {
+		return
+	}
 	_, err := GetRhyResult(context.TODO(), true)
 	if nil != err {
 		// 系统唤醒后可能还没有网络连接，这里等待后再重试
@@ -51,6 +54,9 @@ func RefreshRhyResultJob() {
 }
 
 func GetRhyResult(ctx context.Context, force bool) (map[string]any, error) {
+	if !IsCloudServiceEnabled() {
+		return nil, ErrCloudServiceDisabled
+	}
 	if ContainerDocker == Container {
 		RhyCacheDuration = int64(3600 * 24)
 	}

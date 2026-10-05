@@ -1,4 +1,10 @@
 {
+	"cloudService": "Usługa w chmurze",
+	"cloudServiceTip": "Po włączeniu dostępne są oficjalne konto SiYuan, synchronizacja w chmurze, rynek, sprawdzanie aktualizacji i ogłoszenia; po wyłączeniu żaden oficjalny serwer nie jest używany, a notatki pozostają na tym urządzeniu",
+	"cloudServiceTurnOn": "Włącz usługę w chmurze",
+	"cloudServiceTurnOff": "Wyłącz usługę w chmurze",
+	"cloudServiceTurnedOn": "Usługa w chmurze jest włączona",
+	"cloudServiceTurnedOff": "Usługa w chmurze jest wyłączona, notatki pozostają na tym urządzeniu",
 	"mindmapItem": "Blok elementu mapy myśli",
 	"listMindmapLock": "Zablokuj widok",
 	"listMindmapUnlock": "Odblokuj widok",
@@ -3002,6 +3008,7 @@
 		"406": "Archiwizacja nie powiodła się. Zachowano dane źródłowe; sprawdź wolne miejsce, uprawnienia i pobieranie zasobów",
 		"407": "Przed wyłączeniem szyfrowania zarchiwizuj wszystkie dane odzyskiwania zaszyfrowanych notesów",
 		"408": "Rozwiązywanie nazw DNS nie powiodło się. Sprawdź ustawienia sieci, DNS lub serwera proxy",
-		"409": "Połączenie sieciowe zostało przerwane lub nie można go nawiązać. Sprawdź ustawienia sieci, serwera proxy lub zapory"
+		"409": "Połączenie sieciowe zostało przerwane lub nie można go nawiązać. Sprawdź ustawienia sieci, serwera proxy lub zapory",
+		"410": "Usługa w chmurze jest wyłączona. Możesz ją włączyć w Ustawienia - Konto i Synchronizacja"
 	}
 }

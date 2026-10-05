@@ -1,10 +1,10 @@
-productName: "SiYuan"
-appId: "org.b3log.siyuan"
+productName: "ClaudeNotes"
+appId: "io.github.vlqri7qwml.claudenotes"
 publish: null
 asar: false
 compression: "normal"
-copyright: "© 2020-present Yunnan Liandi Technology Co., Ltd."
-artifactName: "siyuan-${version}-${os}-arm64.${ext}"
+copyright: "ClaudeNotes, based on SiYuan © 2020-present Yunnan Liandi Technology Co., Ltd."
+artifactName: "ClaudeNotes-${version}-${os}-arm64.${ext}"
 extraMetadata:
   main: "electron/main.js"
 directories:
@@ -23,22 +23,22 @@ win:
     - from: "kernel-arm64"
       to: "kernel"
   requestedExecutionLevel: "asInvoker"
-  signtoolOptions:
-    #certificateSubjectName: "Yunnan Liandi Technology Co., Ltd."
-    signingHashAlgorithms: [ 'sha256' ]
-    rfc3161TimeStampServer: "http://timestamp.acs.microsoft.com/"
   target:
     - target: "nsis"
+      arch: "arm64"
+    # 免安装版：解压到任意目录即可运行，数据保存在同目录的 ClaudeNotesData
+    - target: "zip"
       arch: "arm64"
 nsis:
   oneClick: false
   perMachine: false
   allowToChangeInstallationDirectory: true
   allowElevation: true
-  deleteAppDataOnUninstall: true
+  # 数据在安装目录的 ClaudeNotesData 中，由 nsis/installer.nsh 决定是否删除
+  deleteAppDataOnUninstall: false
   createDesktopShortcut: true
   createStartMenuShortcut: true
-  shortcutName: "SiYuan"
+  shortcutName: "ClaudeNotes"
   license: "../LICENSE"
   include: "nsis/installer.nsh"
   warningsAsErrors: false

@@ -919,7 +919,7 @@ func normalizeFileTreeDefaultIcon(fileTree *conf.FileTree, confFileExists bool) 
 }
 
 func readCookieKey() (cookieKey string) {
-	cookieKeyPath := filepath.Join(util.HomeDir, ".config", "siyuan", "cookie.key")
+	cookieKeyPath := filepath.Join(util.UserConfDir(), "cookie.key")
 	if !gulu.File.IsExist(cookieKeyPath) {
 		return
 	}
@@ -935,7 +935,7 @@ func readCookieKey() (cookieKey string) {
 }
 
 func writeCookieKey(cookieKey string) {
-	cookieKeyPath := filepath.Join(util.HomeDir, ".config", "siyuan", "cookie.key")
+	cookieKeyPath := filepath.Join(util.UserConfDir(), "cookie.key")
 	if gulu.File.IsExist(cookieKeyPath) {
 		return
 	}
@@ -1459,7 +1459,7 @@ func HideBoxConfSecret(c *conf.BoxConf) {
 
 func clearPortJSON() {
 	pid := fmt.Sprintf("%d", os.Getpid())
-	portJSON := filepath.Join(util.HomeDir, ".config", "siyuan", "port.json")
+	portJSON := filepath.Join(util.UserConfDir(), "port.json")
 	pidPorts := map[string]string{}
 	var data []byte
 	var err error

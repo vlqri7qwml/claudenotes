@@ -20,7 +20,7 @@ Function AppendInstallLog
 
     ${GetTime} "" "L" $0 $1 $2 $3 $4 $5 $6
     ClearErrors
-    FileOpen $7 "$TEMP\SiYuan-install.log" a
+    FileOpen $7 "$TEMP\ClaudeNotes-install.log" a
     IfErrors installLogDone
     FileSeek $7 0 END
     FileWrite $7 "$2-$1-$0 $4:$5:$6 $R9$\r$\n"
@@ -43,17 +43,18 @@ FunctionEnd
     SetOutPath "$TEMP"
     ${IfNot} ${AtLeastWin10}
         !insertmacro WriteInstallLog "installer-rejected-unsupported-windows version=${VERSION}"
-        MessageBox MB_ICONEXCLAMATION "非常抱歉，思源笔记无法在低于 Windows 10 的系统上进行安装$\n$\n\
-            Sorry, SiYuan cannot be installed on systems below Windows 10$\n"
+        MessageBox MB_ICONEXCLAMATION "非常抱歉，ClaudeNotes 无法在低于 Windows 10 的系统上进行安装$\n$\n\
+            Sorry, ClaudeNotes cannot be installed on systems below Windows 10$\n"
         Quit
     ${EndIf}
 
     !insertmacro WriteInstallLog "installer-start version=${VERSION} package=$EXEPATH"
     Push $R8
     Push $R7
-    nsExec::Exec '"$SYSDIR\taskkill.exe" /F /IM "SiYuan.exe"'
+    ; 只结束 ClaudeNotes 自己的进程，不影响同时安装的官方思源
+    nsExec::Exec '"$SYSDIR\taskkill.exe" /F /IM "ClaudeNotes.exe"'
     Pop $R8
-    nsExec::Exec '"$SYSDIR\taskkill.exe" /F /IM "SiYuan-Kernel.exe"'
+    nsExec::Exec '"$SYSDIR\taskkill.exe" /F /IM "ClaudeNotes-Kernel.exe"'
     Pop $R7
     !insertmacro WriteInstallLog "process-cleanup-complete version=${VERSION} app-result=$R8 kernel-result=$R7"
     Pop $R7
@@ -61,29 +62,20 @@ FunctionEnd
 !macroend
 
 !macro customInit
-    ${FindIt} "$INSTDIR" "data" $R0
-    ${If} -1 != $R0
-        !insertmacro WriteInstallLog "installer-rejected-workspace-data version=${VERSION} target=$INSTDIR detected=$R0"
-        MessageBox MB_ICONSTOP "检测到安装路径下包含了工作空间数据 $R0，请将工作空间文件夹移到其他位置后再试。$\n$\n\
-            The workspace data $R0 was detected in the installation path, please move the workspace folder to another location and try again.$\n"
+    ; 安装目录本身是一个工作空间时拒绝安装，避免程序文件与笔记数据混在一起
+    ${If} ${FileExists} "$INSTDIR\conf\conf.json"
+    ${OrIf} ${FileExists} "$INSTDIR\data\.siyuan\*.*"
+        !insertmacro WriteInstallLog "installer-rejected-workspace-dir version=${VERSION} target=$INSTDIR"
+        MessageBox MB_ICONSTOP "所选安装目录 $INSTDIR 是一个笔记工作空间，请选择其他目录。$\n$\n\
+            The selected folder $INSTDIR is a notes workspace, please choose another folder.$\n"
         Quit
     ${EndIf}
     !insertmacro WriteInstallLog "installer-ready version=${VERSION} target=$INSTDIR"
 !macroend
 
-!macro customUnInit
-    ${un.FindIt} "$INSTDIR" "data" $R0
-    ${If} -1 != $R0
-        MessageBox MB_ICONSTOP "检测到安装路径下包含了工作空间数据 $R0，请将工作空间文件夹移到其他位置后再试。$\n$\n\
-            The workspace data $R0 was detected in the installation path, please move the workspace folder to another location and try again.$\n"
-        Quit
-    ${EndIf}
-!macroend
-
 !macro customInstall
     !insertmacro WriteInstallLog "payload-extracted version=${VERSION} target=$INSTDIR"
-    RMDir /r "$PROFILE\AppData\Local\siyuan-updater"
-    nsExec::ExecToLog '"$SYSDIR\cmd.exe" /c mklink /H "$INSTDIR\resources\kernel\siyuan.exe" "$INSTDIR\resources\kernel\SiYuan-Kernel.exe" 2>nul || ver>nul'
+    nsExec::ExecToLog '"$SYSDIR\cmd.exe" /c mklink /H "$INSTDIR\resources\kernel\claudenotes.exe" "$INSTDIR\resources\kernel\ClaudeNotes-Kernel.exe" 2>nul || ver>nul'
     ${If} $installMode == "all"
         nsExec::ExecToLog '"$SYSDIR\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -Command "$k=\"$INSTDIR\resources\kernel\";$p=[Environment]::GetEnvironmentVariable(\"Path\",\"Machine\");if((-not $p) -or -not ($p.Split(\";\") -contains $k)){$p=\"$k;$p\";[Environment]::SetEnvironmentVariable(\"Path\",$p,\"Machine\")}else{Write-Host \"already in PATH\"}"'
     ${Else}
@@ -93,29 +85,19 @@ FunctionEnd
 !macroend
 
 !macro customUnInstall
+    ; 卸载（非升级）时询问是否删除安装目录中的笔记与配置，默认保留
     ${IfNot} ${isUpdated}
-        IfFileExists "$PROFILE\.config\siyuan\*.*" 0 skipConfigDelete
-            MessageBox MB_YESNO "是否需要彻底删除全局配置（$PROFILE\.config\siyuan\）？$\n$\n\
-                Do you want to delete the global configuration ($PROFILE\.config\siyuan\)?$\n" \
-                /SD IDYES IDYES AcceptedRMConf IDNO SkippedRMConf
-                AcceptedRMConf:
-                    RMDir /r "$PROFILE\.config\siyuan\"
-                SkippedRMConf:
-        skipConfigDelete:
+        IfFileExists "$INSTDIR\ClaudeNotesData\*.*" 0 skipDataDelete
+            MessageBox MB_YESNO|MB_DEFBUTTON2 "是否同时删除笔记与配置（$INSTDIR\ClaudeNotesData）？选择「否」将保留这些数据。$\n$\n\
+                Do you also want to delete your notes and settings ($INSTDIR\ClaudeNotesData)? Choose No to keep them.$\n" \
+                /SD IDNO IDYES AcceptedRMData IDNO SkippedRMData
+                AcceptedRMData:
+                    RMDir /r "$INSTDIR\ClaudeNotesData"
+                    RMDir "$INSTDIR"
+                SkippedRMData:
+        skipDataDelete:
     ${EndIf}
 
-    ${IfNot} ${isUpdated}
-        IfFileExists "$PROFILE\SiYuan\*.*" 0 skipWorkspaceDelete
-            MessageBox MB_YESNO "是否需要彻底删除默认工作空间（$PROFILE\SiYuan\）？$\n$\n\
-                Do you want to completely delete the default workspace ($PROFILE\SiYuan\)?$\n" \
-                /SD IDNO IDYES AcceptedRMWorkspace IDNO SkippedRMWrokspace
-                AcceptedRMWorkspace:
-                    RMDir /r "$PROFILE\SiYuan\"
-                SkippedRMWrokspace:
-        skipWorkspaceDelete:
-    ${EndIf}
-
-    RMDir /r "$PROFILE\AppData\Local\siyuan-updater"
     ${If} $installMode == "all"
         nsExec::ExecToLog '"$SYSDIR\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -Command "$k=\"$INSTDIR\resources\kernel\";$p=[Environment]::GetEnvironmentVariable(\"Path\",\"Machine\");if($p){$a=$p.Split(\";\") | ?{$_ -and ($_ -ne $k)};$p=[string]::Join(\";\",$a);[Environment]::SetEnvironmentVariable(\"Path\",$p,\"Machine\")}"'
     ${Else}
@@ -123,134 +105,27 @@ FunctionEnd
     ${EndIf}
 !macroend
 
-# https://nsis.sourceforge.io/FindIt:_Simple_search_for_file_/_directory
-!macro un.FindIt In For Result
-Push "${In}"
-Push "${For}"
- Call un.FindIt
-Pop "${Result}"
+; 卸载与升级时删除程序文件但保留 ClaudeNotesData（electron-builder 默认会清空整个安装目录）
+!macro customRemoveFiles
+    ClearErrors
+    FindFirst $0 $1 "$INSTDIR\*.*"
+    claudeNotesRemoveLoop:
+        StrCmp $1 "" claudeNotesRemoveDone
+        StrCmp $1 "." claudeNotesRemoveNext
+        StrCmp $1 ".." claudeNotesRemoveNext
+        StrCmp $1 "ClaudeNotesData" claudeNotesRemoveNext
+        IfFileExists "$INSTDIR\$1\*.*" 0 claudeNotesRemoveFile
+            RMDir /r "$INSTDIR\$1"
+            Goto claudeNotesRemoveNext
+        claudeNotesRemoveFile:
+            Delete "$INSTDIR\$1"
+        claudeNotesRemoveNext:
+            ClearErrors
+            FindNext $0 $1
+            IfErrors claudeNotesRemoveDone claudeNotesRemoveLoop
+    claudeNotesRemoveDone:
+    FindClose $0
+    ; 目录为空（没有 ClaudeNotesData）时一并删除
+    RMDir "$INSTDIR"
 !macroend
-!define un.FindIt "!insertmacro un.FindIt"
 
-Function un.FindIt
-Exch $R0
-Exch
-Exch $R1
-Push $R2
-Push $R3
-Push $R4
-Push $R5
-Push $R6
-
- StrCpy $R6 -1
- StrCpy $R3 1
-
- Push $R1
-
- nextDir:
-  Pop $R1
-  IntOp $R3 $R3 - 1
-  ClearErrors
-   FindFirst $R5 $R2 "$R1\*.*"
-
- nextFile:
-  StrCmp $R2 "." gotoNextFile
-  StrCmp $R2 ".." gotoNextFile
-
-  StrCmp $R2 $R0 0 isDir
-   StrCpy $R6 "$R1\$R2"
-   loop:
-    StrCmp $R3 0 done
-     Pop $R1
-     IntOp $R3 $R3 - 1
-     Goto loop
-
- isDir:
-
-  IfFileExists "$R1\$R2\*.*" 0 gotoNextFile
-  IntOp $R3 $R3 + 1
-  Push "$R1\$R2"
-
- gotoNextFile:
-  FindNext $R5 $R2
-  IfErrors 0 nextFile
-
- done:
-  FindClose $R5
-  StrCmp $R3 0 0 nextDir
-  StrCpy $R0 $R6
-
-Pop $R6
-Pop $R5
-Pop $R4
-Pop $R3
-Pop $R2
-Pop $R1
-Exch $R0
-FunctionEnd
-
-# 只能重复实现一遍，因为 un.FindIt 只能用在卸载过程中，这是 nsis 的命名限制
-!macro FindIt In For Result
-Push "${In}"
-Push "${For}"
- Call FindIt
-Pop "${Result}"
-!macroend
-!define FindIt "!insertmacro FindIt"
-
-Function FindIt
-Exch $R0
-Exch
-Exch $R1
-Push $R2
-Push $R3
-Push $R4
-Push $R5
-Push $R6
-
- StrCpy $R6 -1
- StrCpy $R3 1
-
- Push $R1
-
- nextDir:
-  Pop $R1
-  IntOp $R3 $R3 - 1
-  ClearErrors
-   FindFirst $R5 $R2 "$R1\*.*"
-
- nextFile:
-  StrCmp $R2 "." gotoNextFile
-  StrCmp $R2 ".." gotoNextFile
-
-  StrCmp $R2 $R0 0 isDir
-   StrCpy $R6 "$R1\$R2"
-   loop:
-    StrCmp $R3 0 done
-     Pop $R1
-     IntOp $R3 $R3 - 1
-     Goto loop
-
- isDir:
-
-  IfFileExists "$R1\$R2\*.*" 0 gotoNextFile
-  IntOp $R3 $R3 + 1
-  Push "$R1\$R2"
-
- gotoNextFile:
-  FindNext $R5 $R2
-  IfErrors 0 nextFile
-
- done:
-  FindClose $R5
-  StrCmp $R3 0 0 nextDir
-  StrCpy $R0 $R6
-
-Pop $R6
-Pop $R5
-Pop $R4
-Pop $R3
-Pop $R2
-Pop $R1
-Exch $R0
-FunctionEnd

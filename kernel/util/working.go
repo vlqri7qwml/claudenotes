@@ -269,7 +269,7 @@ var (
 	ThemesPath         string        // 数据目录下的第三方主题 themes/ 路径
 	IconsPath          string        // 数据目录下的第三方图标 icons/ 路径
 	SnippetsPath       string        // 数据目录下的 snippets/ 路径
-	ShortcutsPath      string        // 用户家目录下的快捷方式目录路径 home/.config/siyuan/shortcuts/
+	ShortcutsPath      string        // 用户级配置目录下的快捷方式目录路径 UserConfDir()/shortcuts/
 
 	UIProcessIDs = sync.Map{} // UI 进程 ID
 )
@@ -287,7 +287,7 @@ func UIProcessCount() (ret int) {
 }
 
 func initWorkspaceDir(workspaceArg string) {
-	userHomeConfDir := filepath.Join(HomeDir, ".config", "siyuan")
+	userHomeConfDir := UserConfDir()
 	workspaceConf := filepath.Join(userHomeConfDir, "workspace.json")
 	logging.SetLogPath(filepath.Join(userHomeConfDir, "kernel.log"))
 
@@ -298,16 +298,7 @@ func initWorkspaceDir(workspaceArg string) {
 		}
 	}
 
-	defaultWorkspaceDir := filepath.Join(HomeDir, "SiYuan")
-	if gulu.OS.IsWindows() {
-		// 改进 Windows 端默认工作空间路径 https://github.com/siyuan-note/siyuan/issues/5622
-		if userProfile := os.Getenv("USERPROFILE"); "" != userProfile {
-			defaultWorkspaceDir = filepath.Join(userProfile, "SiYuan")
-		}
-	} else if gulu.OS.IsDarwin() {
-		// Change the initial workspace path to ~/Library/Application Support/SiYuan on macOS https://github.com/siyuan-note/siyuan/issues/17095
-		defaultWorkspaceDir = filepath.Join(HomeDir, "Library", "Application Support", "SiYuan")
-	}
+	defaultWorkspaceDir := DefaultWorkspaceDir()
 
 	var workspacePaths []string
 	if !gulu.File.IsExist(workspaceConf) {
@@ -406,7 +397,7 @@ func RemoveWorkspacePath(paths []string, target string) []string {
 
 func ReadWorkspacePaths() (ret []string, err error) {
 	ret = []string{}
-	workspaceConf := filepath.Join(HomeDir, ".config", "siyuan", "workspace.json")
+	workspaceConf := filepath.Join(UserConfDir(), "workspace.json")
 	data, err := os.ReadFile(workspaceConf)
 	if err != nil {
 		msg := fmt.Sprintf("read workspace conf [%s] failed: %s", workspaceConf, err)
@@ -446,7 +437,7 @@ func ReadWorkspacePaths() (ret []string, err error) {
 
 func WriteWorkspacePaths(workspacePaths []string) (err error) {
 	workspacePaths = DeduplicateWorkspacePaths(workspacePaths)
-	workspaceConf := filepath.Join(HomeDir, ".config", "siyuan", "workspace.json")
+	workspaceConf := filepath.Join(UserConfDir(), "workspace.json")
 	data, err := gulu.JSON.MarshalJSON(workspacePaths)
 	if err != nil {
 		msg := fmt.Sprintf("marshal workspace conf [%s] failed: %s", workspaceConf, err)
@@ -484,7 +475,7 @@ const (
 	ContainerHarmony = "harmony" // 鸿蒙端
 
 	LocalHost = "127.0.0.1" // 伺服地址
-	FixedPort = "6806"      // 固定端口
+	FixedPort = "6826"      // 固定端口（官方思源为 6806，改用 6826 以便两者同时运行）
 )
 
 // IsMobileContainer 表示当前内核运行在 Android、iOS 或鸿蒙客户端上。

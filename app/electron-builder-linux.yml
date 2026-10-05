@@ -1,10 +1,10 @@
-productName: "SiYuan"
-appId: "org.b3log.siyuan"
+productName: "ClaudeNotes"
+appId: "io.github.vlqri7qwml.claudenotes"
 publish: null
 asar: false
 compression: "normal"
-copyright: "© 2020-present Yunnan Liandi Technology Co., Ltd."
-artifactName: "siyuan-${version}-${os}.${ext}"
+copyright: "ClaudeNotes, based on SiYuan © 2020-present Yunnan Liandi Technology Co., Ltd."
+artifactName: "ClaudeNotes-${version}-${os}.${ext}"
 extraMetadata:
   main: "electron/main.js"
 directories:
@@ -22,11 +22,11 @@ linux:
   icon: "src/assets/icon/"
   category: "Utility"
   syncDesktopName: true
-  executableName: "siyuan"
+  executableName: "claudenotes"
   desktop: {
     entry: {
-      Name: "SiYuan",
-      Comment: "From thought to insight, with agents",
+      Name: "ClaudeNotes",
+      Comment: "Local notes for AI conversations",
       Type: "Application",
       Categories: "Utility;"
     }
@@ -38,13 +38,7 @@ linux:
     - target: "tar.gz"
     - target: "AppImage"
     - target: "deb"
-    - target: "rpm"
 
-rpm:
-  # 避免与包含相同 Electron 二进制文件的 RPM 包产生 build-id 链接冲突
-  fpm:
-    - "--rpm-rpmbuild-define"
-    - "_build_id_links none"
 
 extraResources:
   - from: "changelogs"

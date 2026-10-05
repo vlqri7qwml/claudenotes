@@ -126,7 +126,7 @@ func TestRemoveWorkspaceDirPhysicallyRemovesRegisteredWorkspace(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			rootDir := t.TempDir()
 			homeDir := filepath.Join(rootDir, "home")
-			workspaceConfDir := filepath.Join(homeDir, ".config", "siyuan")
+			workspaceConfDir := filepath.Join(homeDir, ".config", "claudenotes")
 			currentWorkspaceDir := filepath.Join(rootDir, "current")
 			targetWorkspaceDir := filepath.Join(rootDir, "target")
 			for _, dir := range []string{workspaceConfDir, targetWorkspaceDir} {

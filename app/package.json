@@ -1,9 +1,9 @@
 {
-  "name": "SiYuan",
-  "desktopName": "org.b3log.siyuan",
+  "name": "ClaudeNotes",
+  "desktopName": "io.github.vlqri7qwml.claudenotes",
   "version": "3.8.6",
-  "description": "From thought to insight, with agents",
-  "homepage": "https://b3log.org/siyuan",
+  "description": "ClaudeNotes - local notes for AI conversations, based on SiYuan",
+  "homepage": "https://github.com/vlqri7qwml/.ai",
   "main": "./electron/main.js",
   "packageManager": "pnpm@12.6.0",
   "scripts": {

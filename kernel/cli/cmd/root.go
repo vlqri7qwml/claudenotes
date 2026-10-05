@@ -41,7 +41,7 @@ var (
 )
 
 var rootCmd = &cobra.Command{
-	Use:     "SiYuan-Kernel",
+	Use:     "ClaudeNotes-Kernel",
 	Version: util.Ver,
 	PersistentPostRunE: func(cmd *cobra.Command, args []string) error {
 		// CLI 单次命令没有后台 cron 周期性 flush SQL 队列（server 模式才有 job.StartCron），进程在 main 返回后

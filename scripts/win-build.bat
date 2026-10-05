@@ -123,7 +123,7 @@ if defined BUILD_AMD64 (
     echo.
     echo Building Kernel amd64
     set GOARCH=amd64
-    go build -tags "fts5 sqlcipher" -o "%PROJECT_ROOT%\app\kernel\SiYuan-Kernel.exe" -ldflags "-s -w" .
+    go build -tags "fts5 sqlcipher" -o "%PROJECT_ROOT%\app\kernel\ClaudeNotes-Kernel.exe" -ldflags "-s -w" .
     if errorlevel 1 (
         exit /b %errorlevel%
     )
@@ -134,7 +134,7 @@ if defined BUILD_ARM64 (
     set GOARCH=arm64
     @REM if you want to build arm64, you need to install aarch64-w64-mingw32-gcc
     set CC="D:/Program Files/llvm-mingw-20240518-ucrt-x86_64/bin/aarch64-w64-mingw32-gcc.exe"
-    go build -tags "fts5 sqlcipher" -o "%PROJECT_ROOT%\app\kernel-arm64\SiYuan-Kernel.exe" -ldflags "-s -w" .
+    go build -tags "fts5 sqlcipher" -o "%PROJECT_ROOT%\app\kernel-arm64\ClaudeNotes-Kernel.exe" -ldflags "-s -w" .
     if errorlevel 1 (
         exit /b %errorlevel%
     )
@@ -208,10 +208,10 @@ if defined BUILD_APPX_ARM64 (
 
 REM 打包完成后再建硬链接，避免将 siyuan.exe 打进安装包
 if defined BUILD_AMD64 (
-    mklink /H "%PROJECT_ROOT%\app\kernel\siyuan.exe" "%PROJECT_ROOT%\app\kernel\SiYuan-Kernel.exe"
+    mklink /H "%PROJECT_ROOT%\app\kernel\siyuan.exe" "%PROJECT_ROOT%\app\kernel\ClaudeNotes-Kernel.exe"
 )
 if defined BUILD_ARM64 (
-    mklink /H "%PROJECT_ROOT%\app\kernel-arm64\siyuan.exe" "%PROJECT_ROOT%\app\kernel-arm64\SiYuan-Kernel.exe"
+    mklink /H "%PROJECT_ROOT%\app\kernel-arm64\siyuan.exe" "%PROJECT_ROOT%\app\kernel-arm64\ClaudeNotes-Kernel.exe"
 )
 
 echo.

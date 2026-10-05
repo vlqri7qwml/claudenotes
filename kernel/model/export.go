@@ -542,7 +542,7 @@ func ExportSystemLog() (zipPath string) {
 		logging.LogErrorf("export goroutine log failed: %s", err)
 	}
 
-	appLog := filepath.Join(util.HomeDir, ".config", "siyuan", "app.log")
+	appLog := filepath.Join(util.UserConfDir(), "app.log")
 	if gulu.File.IsExist(appLog) {
 		to := filepath.Join(exportFolder, "app.log")
 		if err := filelock.Copy(appLog, to); err != nil {
@@ -550,7 +550,7 @@ func ExportSystemLog() (zipPath string) {
 		}
 	}
 
-	kernelLog := filepath.Join(util.HomeDir, ".config", "siyuan", "kernel.log")
+	kernelLog := filepath.Join(util.UserConfDir(), "kernel.log")
 	if gulu.File.IsExist(kernelLog) {
 		to := filepath.Join(exportFolder, "kernel.log")
 		if err := filelock.Copy(kernelLog, to); err != nil {
@@ -574,7 +574,7 @@ func ExportSystemLog() (zipPath string) {
 		}
 	}
 
-	collectOptionalSystemLogs(filepath.Join(util.HomeDir, ".config", "siyuan"),
+	collectOptionalSystemLogs(util.UserConfDir(),
 		util.SystemTempDir, exportFolder, gulu.OS.IsWindows())
 
 	zipPath = exportFolder + ".zip"
@@ -1642,7 +1642,7 @@ func ProcessPDF(id, p string, merge, removeAssets, watermark bool, mergeHeadingO
 		}
 
 		api.DisableConfigDir()
-		font.UserFontDir = filepath.Join(util.HomeDir, ".config", "siyuan", "fonts")
+		font.UserFontDir = filepath.Join(util.UserConfDir(), "fonts")
 		if mkdirErr := os.MkdirAll(font.UserFontDir, 0755); nil != mkdirErr {
 			logging.LogErrorf("mkdir [%s] failed: %s", font.UserFontDir, mkdirErr)
 			return nil
@@ -1913,10 +1913,10 @@ func processPDFLinkEmbedAssets(pdfCtx *model.Context, assetDests []string, boxID
 		link := assetLink.annotation
 		for _, scheme := range []string{"http", "https"} {
 			link.URI = strings.ReplaceAll(link.URI, scheme+"://"+util.LocalHost+":"+util.ServerPort+"/export/temp/", "")
-			link.URI = strings.ReplaceAll(link.URI, scheme+"://"+util.LocalHost+":6806/export/temp/", "")
+			link.URI = strings.ReplaceAll(link.URI, scheme+"://"+util.LocalHost+":"+util.FixedPort+"/export/temp/", "")
 			// 将本地资源 URL 转换为导出目录中的相对路径。
 			link.URI = strings.ReplaceAll(link.URI, scheme+"://"+util.LocalHost+":"+util.ServerPort+"/", "")
-			link.URI = strings.ReplaceAll(link.URI, scheme+"://"+util.LocalHost+":6806/", "")
+			link.URI = strings.ReplaceAll(link.URI, scheme+"://"+util.LocalHost+":"+util.FixedPort+"/", "")
 		}
 		link.URI, _ = url.PathUnescape(link.URI)
 		sourceURI := link.URI

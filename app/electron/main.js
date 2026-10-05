@@ -85,12 +85,32 @@ const {
     readLinuxInputMethodSetting, writeLinuxInputMethodSetting, getLinuxInputMethodOverride, configureLinuxInputMethod,
 } = require("./linuxInputMethod");
 
+const {resolveDataRoot, toSiyuanOpenURL} = require("./portableData");
+
 process.noAsar = true;
 const appDir = path.dirname(app.getAppPath());
 const isDevEnv = process.env.NODE_ENV === "development";
 const simulateRosetta = process.argv.includes("--simulate-rosetta");
 const appVer = app.getVersion();
-const confDir = path.join(app.getPath("home"), ".config", "siyuan");
+// ClaudeNotes：配置、默认工作空间、Electron 数据和临时文件都放在安装目录下的 ClaudeNotesData
+const dataRoot = resolveDataRoot({
+    platform: process.platform,
+    execPath: process.execPath,
+    env: process.env,
+    appDataPath: app.getPath("appData"),
+    appPath: app.getAppPath(),
+    isPackaged: app.isPackaged,
+});
+const confDir = dataRoot.confDir;
+// 内核进程继承以下环境变量：用户级配置目录、首次启动的默认工作空间以及临时目录
+process.env.CLAUDENOTES_CONF_DIR = dataRoot.confDir;
+process.env.CLAUDENOTES_DEFAULT_WORKSPACE = dataRoot.workspaceDir;
+try {
+    fs.mkdirSync(dataRoot.tempDir, {recursive: true});
+    process.env.TMP = process.env.TEMP = process.env.TMPDIR = dataRoot.tempDir;
+} catch (e) {
+    console.error(e);
+}
 const windowStatePath = path.join(confDir, "windowState.json");
 const linuxInputMethodSettingPath = path.join(confDir, "linux-input-method.json");
 const accessibilitySettingPath = path.join(confDir, "accessibility.json");
@@ -467,7 +487,7 @@ const getGlobalShortcutWorkspace = (fallbackWorkspace) => {
 const initEventId = [];
 const appMenuByWorkspaceDir = new Map();
 const appMenuWorkspaceByWebContentsId = new Map();
-let kernelPort = 6806;
+let kernelPort = 6826; // 官方思源为 6806，ClaudeNotes 使用 6826 以便两者同时运行
 let resetWindowStateOnRestart = false;
 let openAsHidden = false;
 let systemShutdownState = systemShutdownNone;
@@ -544,7 +564,7 @@ if (remoteKernelTarget) {
     }
 }
 
-const initialSiYuanOpenURL = process.argv.find((arg) => arg.startsWith("siyuan://"));
+const initialSiYuanOpenURL = process.argv.map(toSiyuanOpenURL).find(Boolean);
 if (remoteKernelTarget && !remoteKernelArgError && initialSiYuanOpenURL) {
     pendingRemoteOpenURLs.push(initialSiYuanOpenURL);
 }
@@ -697,13 +717,20 @@ const bindTopBarContextMenu = (win) => {
 
 remote.initialize();
 
-// Electron 相关文件夹名称改为 `SiYuan-Electron` https://github.com/siyuan-note/siyuan/issues/3349
-// getPath("userData") 会创建空的 SiYuan 目录，改为 app.getPath("appData")
-app.setPath("userData", path.join(app.getPath("appData"), app.getName() + "-Electron"));
+// Electron 的用户数据、会话、日志和崩溃转储都放到数据根目录，不写入系统应用数据目录
+app.setPath("userData", dataRoot.electronDir);
+app.setPath("sessionData", path.join(dataRoot.electronDir, "session"));
+app.setPath("logs", path.join(dataRoot.electronDir, "logs"));
+app.setPath("crashDumps", path.join(dataRoot.electronDir, "crashes"));
+try {
+    app.setPath("temp", dataRoot.tempDir);
+} catch (e) {
+    console.error(e);
+}
 
 if (process.platform === "win32") {
     // Windows 需要设置 AppUserModelId 才能正确显示应用名称和应用图标 https://github.com/siyuan-note/siyuan/issues/17022
-    app.setAppUserModelId("org.b3log.siyuan");
+    app.setAppUserModelId("io.github.vlqri7qwml.claudenotes");
 }
 
 if (!app.requestSingleInstanceLock()) {
@@ -711,17 +738,18 @@ if (!app.requestSingleInstanceLock()) {
     return;
 }
 
-// 开发环境下 Windows 需显式传入 Electron 可执行文件路径和 main.js 路径，否则 siyuan:// 会被当作相对路径
+// 只注册 claudenotes:// 协议，不抢占官方思源的 siyuan://；文档内的 siyuan://blocks/ 链接仍由前端内部处理
+// 开发环境下 Windows 需显式传入 Electron 可执行文件路径和 main.js 路径，否则协议链接会被当作相对路径
 if (isDevEnv && process.defaultApp && process.argv.length >= 2) {
     const mainScript = path.resolve(process.argv[1]);
     if (process.platform === "win32") {
-        app.removeAsDefaultProtocolClient("siyuan", process.execPath, [mainScript]);
-        app.setAsDefaultProtocolClient("siyuan", process.execPath, [mainScript]);
+        app.removeAsDefaultProtocolClient("claudenotes", process.execPath, [mainScript]);
+        app.setAsDefaultProtocolClient("claudenotes", process.execPath, [mainScript]);
     } else {
-        app.setAsDefaultProtocolClient("siyuan");
+        app.setAsDefaultProtocolClient("claudenotes");
     }
 } else {
-    app.setAsDefaultProtocolClient("siyuan");
+    app.setAsDefaultProtocolClient("claudenotes");
 }
 
 app.commandLine.appendSwitch("auto-detect", "false");
@@ -747,7 +775,7 @@ for (let i = argStart; i < process.argv.length; i++) {
         arg.startsWith("--safe-mode=") || arg.startsWith("--lang=") || arg.startsWith("--connection-session=") || arg === "--remote" ||
         arg.startsWith("--remote=") || arg === "--trust-remote-extensions" ||
         arg.startsWith("--trust-remote-extensions=") ||
-        arg.startsWith("siyuan://")) {
+        toSiyuanOpenURL(arg)) {
         // 跳过内置参数
         if (arg.startsWith("--openAsHidden")) {
             openAsHidden = true;
@@ -794,7 +822,7 @@ try {
     }
 } catch (e) {
     console.error(e);
-    require("electron").dialog.showErrorBox("创建配置目录失败 Failed to create config directory", "思源需要在用户家目录下创建配置文件夹（~/.config/siyuan），请确保该路径具有写入权限。\n\nSiYuan needs to create a configuration folder (~/.config/siyuan) in the user's home directory. Please make sure that the path has write permissions.");
+    require("electron").dialog.showErrorBox("创建配置目录失败 Failed to create config directory", `ClaudeNotes 需要创建配置文件夹（${confDir}），请确保该路径具有写入权限。\n\nClaudeNotes needs to create a configuration folder (${confDir}). Please make sure that the path has write permissions.`);
     app.exit();
 }
 
@@ -994,7 +1022,7 @@ const applyMacAppMenu = (sync) => {
         role: "appMenu",
         label: app.name,
         submenu: [
-            {role: "about", label: languages.appMenuAbout || "About SiYuan"},
+            {role: "about", label: languages.appMenuAbout || "About ClaudeNotes"},
             ...(sync.readonly ? [] : [{
                 label: languages.config || "Settings",
                 click: () => {
@@ -1012,11 +1040,11 @@ const applyMacAppMenu = (sync) => {
                 },
                 ...withHotkey(sync.hotkey.toggleWin),
             },
-            {role: "hide", label: languages.appMenuHide || "Hide SiYuan"},
+            {role: "hide", label: languages.appMenuHide || "Hide ClaudeNotes"},
             {role: "hideOthers", label: languages.appMenuHideOthers || "Hide Others"},
             {role: "unhide", label: languages.showAll || "Show All"},
             {type: "separator"},
-            {role: "quit", label: languages.appMenuQuit || "Quit SiYuan"},
+            {role: "quit", label: languages.appMenuQuit || "Quit ClaudeNotes"},
         ],
     }, {
         role: "editMenu",
@@ -1103,7 +1131,7 @@ const setStartupApplicationMenu = () => {
     const languages = loadAppMenuLanguages(language);
     Menu.setApplicationMenu(Menu.buildFromTemplate([{
         role: "appMenu",
-        label: "SiYuan",
+        label: "ClaudeNotes",
         submenu: [
             {role: "about", label: languages.appMenuAbout},
             {type: "separator"},
@@ -1240,7 +1268,7 @@ const loadAppleSiliconWarningLanguages = (requestedLanguage) => {
     }
     return {
         arm64TranslationTitle: "Install the Apple silicon version",
-        arm64TranslationMessage: "SiYuan is running the Intel version through Rosetta. This may significantly " +
+        arm64TranslationMessage: "ClaudeNotes is running the Intel version through Rosetta. This may significantly " +
             "reduce performance. Please use the Apple silicon version",
         downloadAppleSilicon: "Download the Apple silicon version",
     };
@@ -1941,7 +1969,7 @@ const resetSystemShutdown = (ports) => {
     systemShutdownState = systemShutdownNone;
     gracefulSystemShutdownPromise = undefined;
     keepAppOpenDuringSystemShutdown = false;
-    writeLog("system shutdown canceled because SiYuan failed to exit gracefully [ports=" + ports.join(",") + "]");
+    writeLog("system shutdown canceled because ClaudeNotes failed to exit gracefully [ports=" + ports.join(",") + "]");
     ports.forEach((port) => {
         const workspace = workspaces.find((item) => port.toString() === item.port.toString());
         if (workspace && workspace.browserWindow && !workspace.browserWindow.isDestroyed()) {
@@ -2144,7 +2172,7 @@ const initMainWindow = (kernel = kernelPort, remoteAuthenticated = true) => {
 
     // 创建主窗体
     const currentWindow = new BrowserWindow({
-        title: "SiYuan",
+        title: "ClaudeNotes",
         show: false,
         width: windowState.width,
         height: windowState.height,
@@ -2285,7 +2313,7 @@ const initMainWindow = (kernel = kernelPort, remoteAuthenticated = true) => {
             }
             return;
         }
-        let siyuanOpenURL = process.argv.find((arg) => arg.startsWith("siyuan://"));
+        let siyuanOpenURL = process.argv.map(toSiyuanOpenURL).find(Boolean);
         if (siyuanOpenURL) {
             if (currentWindow.isMinimized()) {
                 currentWindow.restore();
@@ -2548,10 +2576,10 @@ const initKernel = (workspace, port, lang, safeMode, preparedBoot) => {
             resolve(false);
             return;
         }
-        const kernelName = "win32" === process.platform ? "SiYuan-Kernel.exe" : "SiYuan-Kernel";
+        const kernelName = "win32" === process.platform ? "ClaudeNotes-Kernel.exe" : "ClaudeNotes-Kernel";
         const kernelPath = path.join(appDir, "kernel", kernelName);
         if (!fs.existsSync(kernelPath)) {
-            showErrorWindow("内核程序丢失", "Kernel program is missing", `<div>内核程序丢失，请重新安装思源，并将思源内核程序加入杀毒软件信任列表。</div><div>The kernel program is not found, please reinstall SiYuan and add SiYuan Kernel prgram into the trust list of your antivirus software.</div><div><i>${kernelPath}</i></div>`);
+            showErrorWindow("内核程序丢失", "Kernel program is missing", `<div>内核程序丢失，请重新安装ClaudeNotes，并将ClaudeNotes 内核程序加入杀毒软件信任列表。</div><div>The kernel program is not found, please reinstall ClaudeNotes and add ClaudeNotes Kernel prgram into the trust list of your antivirus software.</div><div><i>${kernelPath}</i></div>`);
             bootWindow.destroy();
             resolve(false);
             return;
@@ -2618,18 +2646,18 @@ const initKernel = (workspace, port, lang, safeMode, preparedBoot) => {
                                 showWindow(workspaces[0].browserWindow);
                             }
 
-                            errorWindowId = showErrorWindow("工作空间已被锁定", "The workspace is locked", "<div>该工作空间正在被使用，请尝试在任务管理器中结束 SiYuan-Kernel 进程或者重启操作系统后再启动思源。</div><div>The workspace is being used, please try to end the SiYuan-Kernel process in the task manager or restart the operating system and then start SiYuan.</div>");
+                            errorWindowId = showErrorWindow("工作空间已被锁定", "The workspace is locked", "<div>该工作空间正在被使用，请尝试在任务管理器中结束 ClaudeNotes-Kernel 进程或者重启操作系统后再启动ClaudeNotes。</div><div>The workspace is being used, please try to end the ClaudeNotes-Kernel process in the task manager or restart the operating system and then start ClaudeNotes.</div>");
                             break;
                         case 25:
                             errorWindowId = showErrorWindow("初始化工作空间失败", "Failed to create workspace directory", "<div>工作空间文件夹权限不足，请查看 <a href=\"#\" data-log-path>~/.config/siyuan/kernel.log</a> 获取详细报错信息</div><div>Insufficient permissions for the workspace folder. Please check <a href=\"#\" data-log-path>~/.config/siyuan/kernel.log</a> for detailed error information.</div>", "⚠️", kernelLogPath);
                             break;
                         case 26:
-                            errorWindowId = showErrorWindow("文件系统访问失败", "File system access failed", "<div>思源内核无法访问所需文件，现已安全退出。可能原因包括文件或文件夹权限不足、文件为只读、文件被其他程序占用，以及同步盘或安全软件干预。</div><div>请查看 <a href=\"#\" data-log-path>工作空间/temp/siyuan.log</a> 获取详细错误信息。</div><div>SiYuan Kernel could not access a required file and has exited safely. Possible causes include insufficient permissions, read-only files, another process using a file, or interference from sync or security software.</div><div>Please check <a href=\"#\" data-log-path>workspace/temp/siyuan.log</a> for details.</div>", "⚠️", workspaceLogPath);
+                            errorWindowId = showErrorWindow("文件系统访问失败", "File system access failed", "<div>ClaudeNotes 内核无法访问所需文件，现已安全退出。可能原因包括文件或文件夹权限不足、文件为只读、文件被其他程序占用，以及同步盘或安全软件干预。</div><div>请查看 <a href=\"#\" data-log-path>工作空间/temp/siyuan.log</a> 获取详细错误信息。</div><div>ClaudeNotes Kernel could not access a required file and has exited safely. Possible causes include insufficient permissions, read-only files, another process using a file, or interference from sync or security software.</div><div>Please check <a href=\"#\" data-log-path>workspace/temp/siyuan.log</a> for details.</div>", "⚠️", workspaceLogPath);
                             break;
                         case 0:
                             break;
                         default:
-                            errorWindowId = showErrorWindow("内核因未知原因退出", "The kernel exited for unknown reasons", `<div>思源内核因未知原因退出 [code=${code}]，请尝试重启操作系统后再启动思源。如果该问题依然发生，请检查杀毒软件是否阻止思源内核启动。</div><div>SiYuan Kernel exited for unknown reasons [code=${code}], please try to reboot your operating system and then start SiYuan again. If occurs this problem still, please check your anti-virus software whether kill the SiYuan Kernel.</div>`);
+                            errorWindowId = showErrorWindow("内核因未知原因退出", "The kernel exited for unknown reasons", `<div>ClaudeNotes 内核因未知原因退出 [code=${code}]，请尝试重启操作系统后再启动ClaudeNotes。如果该问题依然发生，请检查杀毒软件是否阻止ClaudeNotes 内核启动。</div><div>ClaudeNotes Kernel exited for unknown reasons [code=${code}], please try to reboot your operating system and then start ClaudeNotes again. If occurs this problem still, please check your anti-virus software whether kill the ClaudeNotes Kernel.</div>`);
                             break;
                     }
 
@@ -2652,7 +2680,7 @@ const initKernel = (workspace, port, lang, safeMode, preparedBoot) => {
                 writeLog("get kernel version failed: " + e.message);
                 if (14 < ++count) {
                     writeLog("get kernel ver failed");
-                    showErrorWindow("获取内核服务端口失败", "Failed to Obtain Kernel Service Port", "<div>获取内核服务端口失败，请确保程序拥有网络权限并不受防火墙和杀毒软件阻止。</div><div>Failed to obtain kernel service port. Please ensure SiYuan has network permissions and is not blocked by firewalls or antivirus software.</div>");
+                    showErrorWindow("获取内核服务端口失败", "Failed to Obtain Kernel Service Port", "<div>获取内核服务端口失败，请确保程序拥有网络权限并不受防火墙和杀毒软件阻止。</div><div>Failed to obtain kernel service port. Please ensure ClaudeNotes has network permissions and is not blocked by firewalls or antivirus software.</div>");
                     bootWindow.destroy();
                     resolve(false);
                     return;
@@ -2678,8 +2706,8 @@ const initKernel = (workspace, port, lang, safeMode, preparedBoot) => {
                     if (Date.now() - bootShowStart > bootTimeout) {
                         writeLog("boot progress timeout after " + bootTimeout + "ms, exiting boot");
                         showErrorWindow("启动超时", "Boot timeout",
-                            "<div>内核启动超时，请查看 <a href=\"#\" data-log-path>工作空间/temp/siyuan.log</a> 获取详细报错信息，或尝试重启思源。</div>" +
-                            "<div>Kernel boot timed out. Please check <a href=\"#\" data-log-path>workspace/temp/siyuan.log</a> for details, or try restarting SiYuan.</div>",
+                            "<div>内核启动超时，请查看 <a href=\"#\" data-log-path>工作空间/temp/siyuan.log</a> 获取详细报错信息，或尝试重启ClaudeNotes。</div>" +
+                            "<div>Kernel boot timed out. Please check <a href=\"#\" data-log-path>workspace/temp/siyuan.log</a> for details, or try restarting ClaudeNotes.</div>",
                             "⚠️", workspaceLogPath);
                         requestKernelExit(currentKernelPort);
                         bootWindow.destroy();
@@ -3706,7 +3734,7 @@ app.whenReady().then(() => {
         const wndBounds = getWindowByContentId(event.sender.id).getBounds();
         const wndScreen = screen.getDisplayNearestPoint({x: wndBounds.x, y: wndBounds.y});
         const printWin = new BrowserWindow({
-            title: "SiYuan",
+            title: "ClaudeNotes",
             show: true,
             width: Math.floor(wndScreen.size.width * 0.8),
             height: Math.floor(wndScreen.size.height * 0.8),
@@ -3793,7 +3821,7 @@ app.whenReady().then(() => {
         const mainScreen = screen.getDisplayNearestPoint({x: mainBounds.x, y: mainBounds.y});
         const geometry = workspaceID ? normalizeWindowGeometry(data.windowGeometry, screen) : undefined;
         const win = new BrowserWindow({
-            title: "SiYuan",
+            title: "ClaudeNotes",
             show: true,
             trafficLightPosition: {x: 8, y: 13},
             width: Math.floor(data.width || mainScreen.size.width * 0.7),
@@ -3914,7 +3942,7 @@ app.whenReady().then(() => {
                 tray = new Tray(path.join(appDir, "stage", "icon-large.png"));
                 const trayName = workspaceItem.ownsKernel ? path.basename(data.workspaceDir) :
                     new URL(workspaceItem.kernelTarget.origin).host;
-                tray.setToolTip(`${trayName} - SiYuan v${appVer}`);
+                tray.setToolTip(`${trayName} - ClaudeNotes v${appVer}`);
                 const mainWindow = getWindowByContentId(event.sender.id);
                 if (!mainWindow || mainWindow.isDestroyed()) {
                     tray.destroy();
@@ -4134,6 +4162,7 @@ app.whenReady().then(() => {
             query: {
                 lang: language,
                 home: app.getPath("home"),
+                defaultWorkspace: dataRoot.workspaceDir,
                 v: appVer,
                 icon: path.join(appDir, "stage", "icon-large.png"),
             },
@@ -4179,6 +4208,7 @@ app.whenReady().then(() => {
             query: {
                 lang: language,
                 home: app.getPath("home"),
+                defaultWorkspace: dataRoot.workspaceDir,
                 v: appVer,
                 icon: path.join(appDir, "stage", "icon-large.png"),
                 crash: "1",
@@ -4225,6 +4255,7 @@ app.whenReady().then(() => {
             query: {
                 lang: language,
                 home: app.getPath("home"),
+                defaultWorkspace: dataRoot.workspaceDir,
                 v: appVer,
                 icon: path.join(appDir, "stage", "icon-large.png"),
                 missing: missingWorkspacePath,
@@ -4334,6 +4365,7 @@ app.whenReady().then(() => {
 });
 
 app.on("open-url", async (event, url) => { // for macOS
+    url = toSiyuanOpenURL(url) || url;
     if (updateInstallPromise) {
         writeLog("ignored URL while installing update");
         return;
@@ -4385,7 +4417,7 @@ app.on("second-instance", (event, argv) => {
     }
     const secondRemoteArg = getArgFrom(argv, "--remote");
     if (secondRemoteArg !== undefined || remoteKernelTarget) {
-        const siyuanURL = argv.find((arg) => arg.startsWith("siyuan://"));
+        const siyuanURL = argv.map(toSiyuanOpenURL).find(Boolean);
         const localTargetRequested = getArgFrom(argv, "--workspace") !== undefined ||
             getArgFrom(argv, "--port") !== undefined;
         let secondRemoteOrigin;
@@ -4394,7 +4426,7 @@ app.on("second-instance", (event, argv) => {
                 secondRemoteOrigin = normalizeRemoteKernelOrigin(secondRemoteArg);
                 writeLog("got second-instance remote kernel [origin=" + secondRemoteOrigin + "]");
                 if (!remoteKernelTarget || secondRemoteOrigin !== remoteKernelTarget.origin) {
-                    writeLog("ignored a different remote kernel while another SiYuan instance is running");
+                    writeLog("ignored a different remote kernel while another ClaudeNotes instance is running");
                 }
             } catch (error) {
                 writeLog("ignored invalid second-instance remote kernel: " + error.message);
@@ -4458,7 +4490,7 @@ app.on("second-instance", (event, argv) => {
         return;
     }
 
-    const siyuanURL = argv.find((arg) => arg.startsWith("siyuan://"));
+    const siyuanURL = argv.map(toSiyuanOpenURL).find(Boolean);
     workspaces.forEach(item => {
         if (item.browserWindow && !item.browserWindow.isDestroyed() && siyuanURL) {
             item.browserWindow.webContents.send("siyuan-open-url", siyuanURL);

@@ -509,7 +509,7 @@ func ValidateOIDCProviderConfiguration(ctx context.Context, config *conf.OIDC) e
 	if err := ValidateOIDCConfiguration(config); err != nil {
 		return err
 	}
-	redirectURL := "http://127.0.0.1:6806/api/system/oidc/callback"
+	redirectURL := "http://" + util.LocalHost + ":" + util.FixedPort + "/api/system/oidc/callback"
 	if config.RedirectURL != "" {
 		var err error
 		if redirectURL, err = validatePublicOIDCRedirectURL(config.RedirectURL); err != nil {

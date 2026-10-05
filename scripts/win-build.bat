@@ -206,12 +206,12 @@ if defined BUILD_APPX_ARM64 (
 )
 :skipappx
 
-REM 打包完成后再建硬链接，避免将 siyuan.exe 打进安装包
+REM 打包完成后再建硬链接，避免将 claudenotes.exe 打进安装包
 if defined BUILD_AMD64 (
-    mklink /H "%PROJECT_ROOT%\app\kernel\siyuan.exe" "%PROJECT_ROOT%\app\kernel\ClaudeNotes-Kernel.exe"
+    mklink /H "%PROJECT_ROOT%\app\kernel\claudenotes.exe" "%PROJECT_ROOT%\app\kernel\ClaudeNotes-Kernel.exe"
 )
 if defined BUILD_ARM64 (
-    mklink /H "%PROJECT_ROOT%\app\kernel-arm64\siyuan.exe" "%PROJECT_ROOT%\app\kernel-arm64\ClaudeNotes-Kernel.exe"
+    mklink /H "%PROJECT_ROOT%\app\kernel-arm64\claudenotes.exe" "%PROJECT_ROOT%\app\kernel-arm64\ClaudeNotes-Kernel.exe"
 )
 
 echo.

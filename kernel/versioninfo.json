@@ -7,16 +7,16 @@
     "FileSubType": "00"
   },
   "StringFileInfo": {
-    "Comments": "",
-    "CompanyName": "Yunnan Liandi Technology Co., Ltd.",
-    "FileDescription": "SiYuan Kernel",
+    "Comments": "ClaudeNotes, based on SiYuan (AGPL-3.0)",
+    "CompanyName": "",
+    "FileDescription": "ClaudeNotes Kernel",
     "FileVersion": "",
     "InternalName": "",
     "LegalCopyright": "© 2020-present Yunnan Liandi Technology Co., Ltd.",
     "LegalTrademarks": "",
     "OriginalFilename": "",
     "PrivateBuild": "",
-    "ProductName": "",
+    "ProductName": "ClaudeNotes",
     "ProductVersion": "",
     "SpecialBuild": ""
   },

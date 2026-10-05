@@ -105,11 +105,16 @@ const confDir = dataRoot.confDir;
 // 内核进程继承以下环境变量：用户级配置目录、首次启动的默认工作空间以及临时目录
 process.env.CLAUDENOTES_CONF_DIR = dataRoot.confDir;
 process.env.CLAUDENOTES_DEFAULT_WORKSPACE = dataRoot.workspaceDir;
-try {
-    fs.mkdirSync(dataRoot.tempDir, {recursive: true});
-    process.env.TMP = process.env.TEMP = process.env.TMPDIR = dataRoot.tempDir;
-} catch (e) {
-    console.error(e);
+// 仅 Windows 把临时文件放到数据根目录，避免写入 C 盘；macOS 与 Linux 上 Chromium 的单实例套接字位于临时目录，
+// 安装路径较深时会超过 Unix 套接字 108 字节的长度限制导致无法启动，因此保留系统临时目录
+const useDataTempDir = "win32" === process.platform;
+if (useDataTempDir) {
+    try {
+        fs.mkdirSync(dataRoot.tempDir, {recursive: true});
+        process.env.TMP = process.env.TEMP = process.env.TMPDIR = dataRoot.tempDir;
+    } catch (e) {
+        console.error(e);
+    }
 }
 const windowStatePath = path.join(confDir, "windowState.json");
 const linuxInputMethodSettingPath = path.join(confDir, "linux-input-method.json");
@@ -722,10 +727,12 @@ app.setPath("userData", dataRoot.electronDir);
 app.setPath("sessionData", path.join(dataRoot.electronDir, "session"));
 app.setPath("logs", path.join(dataRoot.electronDir, "logs"));
 app.setPath("crashDumps", path.join(dataRoot.electronDir, "crashes"));
-try {
-    app.setPath("temp", dataRoot.tempDir);
-} catch (e) {
-    console.error(e);
+if (useDataTempDir) {
+    try {
+        app.setPath("temp", dataRoot.tempDir);
+    } catch (e) {
+        console.error(e);
+    }
 }
 
 if (process.platform === "win32") {
@@ -750,6 +757,13 @@ if (isDevEnv && process.defaultApp && process.argv.length >= 2) {
     }
 } else {
     app.setAsDefaultProtocolClient("claudenotes");
+}
+
+// Linux 便携模式：Chromium 的证书库（$XDG_DATA_HOME/pki/nssdb）和 Mesa 着色器缓存（$XDG_CACHE_HOME）默认写入用户主目录，
+// 改到数据根目录；需在注册协议之后设置，xdg-mime 仍写入系统的应用关联
+if ("linux" === process.platform && dataRoot.portable) {
+    process.env.XDG_DATA_HOME = path.join(dataRoot.electronDir, "xdg-data");
+    process.env.XDG_CACHE_HOME = path.join(dataRoot.electronDir, "xdg-cache");
 }
 
 app.commandLine.appendSwitch("auto-detect", "false");

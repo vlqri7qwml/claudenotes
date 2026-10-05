@@ -268,3 +268,92 @@
 .b3-typography .code-block, .protyle-wysiwyg .code-block {
     background-color: rgba(27, 31, 35, .05);
 }
+
+/* ---------- ClaudeNotes：.ai 界面风格（明亮） ----------
+ * 配色、字体、圆角取自 .ai 前端的设计变量；只覆盖需要改变的变量，其余沿用上方思源默认值。
+ * 布局微调见 app/src/assets/scss/business/_claudenotes.scss。
+ */
+:root {
+    --claudenotes-main: #F8F8F6;
+    --claudenotes-sidebar: #F7F7F4;
+    --claudenotes-border: #E8E7E3;
+    --claudenotes-text: #2A2A2A;
+    --claudenotes-icon: #73726C;
+    --claudenotes-accent: #D97757;
+    --claudenotes-accent-strong: #C6613F;
+    --claudenotes-hover: #EFEEEB;
+    --claudenotes-pressed: #EAE9E6;
+    --claudenotes-input: #FFFFFF;
+    --claudenotes-user-bubble: #F0EEE7;
+
+    /* 主色 */
+    --b3-theme-primary: var(--claudenotes-accent-strong);
+    --b3-theme-primary-light: rgba(198, 97, 63, .54);
+    --b3-theme-primary-lighter: rgba(198, 97, 63, .32);
+    --b3-theme-primary-lightest: rgba(217, 119, 87, .12);
+    --b3-theme-secondary: var(--claudenotes-accent);
+    --b3-theme-background: var(--claudenotes-main);
+    --b3-theme-background-light: var(--claudenotes-pressed);
+    --b3-theme-surface: var(--claudenotes-sidebar);
+    --b3-theme-surface-light: rgba(239, 238, 235, .86);
+    --b3-theme-surface-lighter: var(--claudenotes-border);
+    --b3-theme-error: #B9382C;
+    --b3-theme-success: #4E8A3E;
+
+    /* 文字颜色 */
+    --b3-theme-on-background: var(--claudenotes-text);
+    --b3-theme-on-surface: var(--claudenotes-icon);
+    --b3-theme-on-surface-light: rgba(115, 114, 108, .68);
+    --b3-theme-on-surface-lighter: #C9C7C0;
+
+    /* 字体：界面 Figtree，正文 Source Serif 4（仅含拉丁字符，中日韩文字回退到系统字体） */
+    --b3-font-family: var(--b3-font-family-emoji-reset), "Figtree", var(--b3-font-family-default);
+    --b3-font-family-protyle: var(--b3-font-family-emoji-reset), "Source Serif 4", "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, var(--b3-font-family-default);
+    --b3-font-family-kbd: var(--b3-font-family);
+
+    /* 背景 */
+    --b3-body-background: var(--claudenotes-sidebar);
+
+    /* 顶部工具栏 */
+    --b3-toolbar-color: var(--claudenotes-icon);
+    --b3-toolbar-hover: var(--claudenotes-hover);
+
+    /* 线条 */
+    --b3-border-radius: 8px;
+    --b3-border-radius-s: 4px;
+
+    /* 滚动条 */
+    --b3-scroll-color: rgba(0, 0, 0, .14);
+
+    /* 列表 */
+    --b3-list-hover: var(--claudenotes-hover);
+    --b3-list-icon-hover: var(--claudenotes-pressed);
+
+    /* 菜单 */
+    --b3-menu-background: var(--claudenotes-input);
+    --b3-menu-icon-color: var(--claudenotes-icon);
+
+    /* 提示 */
+    --b3-tooltips-background: #2A2A2A;
+    --b3-tooltips-color: #FFFFFF;
+    --b3-tooltips-second-color: rgba(255, 255, 255, .6);
+    --b3-tooltips-shadow: 0 4px 12px rgba(0, 0, 0, .12);
+
+    /* 遮罩 */
+    --b3-mask-background: rgba(31, 31, 30, .25);
+
+    /* switch */
+    --b3-switch-checked-hover: rgba(217, 119, 87, .18);
+
+    /* 阴影 */
+    --b3-dock-shadow-color: rgba(0, 0, 0, .08);
+    --b3-point-shadow: 0 4px 12px rgba(0, 0, 0, .08), 0 0 0 1px var(--claudenotes-border);
+    --b3-dialog-shadow: 0 12px 32px rgba(0, 0, 0, .12), 0 0 0 1px var(--claudenotes-border);
+
+    /* 代码片段背景 */
+    --b3-protyle-code-background: rgba(42, 42, 42, .05);
+
+    /* 所见即所得行内元素颜色 */
+    --b3-protyle-inline-link-color: var(--claudenotes-accent-strong);
+    --b3-protyle-inline-mark-background: #F7DFB5;
+}

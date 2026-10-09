@@ -1,3 +1,5 @@
+> 这是思源笔记官方的原始说明，保留作参考；ClaudeNotes 的说明见仓库根目录的 README.md 和 CLAUDENOTES.md。
+
 <p align="center">
 <img alt="SiYuan" src="https://b3log.org/images/brand/siyuan-128.png">
 <br>
@@ -24,10 +26,8 @@
 </p>
 
 <p align="center">
-<a href="README.md">English</a>
+<a href="SIYUAN-README.md">English</a>
 | <b>中文</b>
-| <a href="README.ja.md">日本語</a>
-| <a href="README.tr.md">Türkçe</a>
 </p>
 
 ---
@@ -70,9 +70,9 @@
 
 思源笔记是一款隐私优先的个人知识管理系统，支持细粒度块级引用和 Markdown 所见即所得。
 
-![feature0.png](screenshots/feature0.png)
+![feature0.png](../screenshots/feature0.png)
 
-![feature5-1.png](screenshots/feature5-1.png)
+![feature5-1.png](../screenshots/feature5-1.png)
 
 如需了解更多，请阅读[在线用户指南](https://siyuan-cn.b3log.org/)或前往[思源笔记官方讨论区](https://ld246.com/domain/siyuan)交流。
 
@@ -115,7 +115,7 @@
 
 ## 🏗️ 架构和生态
 
-![思源笔记架构设计](screenshots/SiYuan_Arch.svg "思源笔记架构设计")
+![思源笔记架构设计](../screenshots/SiYuan_Arch.svg "思源笔记架构设计")
 
 | Project                                                  | Description  | Forks                                                                           | Stars                                                                                | 
 |----------------------------------------------------------|--------------|---------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|
@@ -132,7 +132,7 @@
 ## 🗺️ 路线图
 
 - [思源笔记开发计划和进度](https://github.com/orgs/siyuan-note/projects/1)
-- [思源笔记版本变更和公告](CHANGELOG.md)
+- [思源笔记版本变更和公告](../app/changelogs)
 
 ## 🚀 下载安装
 

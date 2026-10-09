@@ -1,6 +1,6 @@
 # ClaudeNotes
 
-ClaudeNotes 是在思源笔记 v3.8.6 源码（本仓库，对应官方提交 `fb3355f`）基础上修改的本地笔记软件：界面采用 `.ai` 项目（仿 Claude 桌面版）的风格，内置 AI 对话的粘贴与导入，数据默认全部放在安装目录，并且可以一键关闭思源官方的云端服务。源码固定在本仓库中，不依赖官方后续版本，任何历史版本都可以从本仓库的标签和 Releases 重新获取。
+ClaudeNotes 是在思源笔记 v3.8.6 源码（本仓库，对应官方提交 `fb3355f`）基础上修改的本地笔记软件：界面采用 claude.ai 的风格（配色最初参考 `.ai` 项目），内置 AI 对话的粘贴与导入，数据默认全部放在安装目录，并且可以一键关闭思源官方的云端服务。源码固定在本仓库中，不依赖官方后续版本，任何历史版本都可以从本仓库的标签和 Releases 重新获取。
 
 ## 与官方思源的区别
 
@@ -83,6 +83,8 @@ ClaudeNotes 新增的数据都使用思源原有的扩展点，官方思源会�
 
 需要：Go（版本见 `kernel/go.mod`）、Node.js 24 与 pnpm（版本见 `app/package.json` 的 `packageManager`）、C 编译器（内核使用 CGO）。
 
+Windows 上必须先安装 64 位 MinGW-w64 的 gcc（例如 MSYS2 的 `mingw-w64-ucrt-x86_64-gcc`，并把其 `bin` 目录加入 PATH），编译前设置 `CGO_ENABLED=1`。没有 gcc 时 Go 会自动关闭 CGO，编译报 `undefined: loadPlatformFonts` 之类的错误。
+
 ```bash
 cd app
 pnpm install
@@ -105,6 +107,10 @@ pnpm exec electron-builder --linux --config electron-builder-linux.yml --publish
 在本仓库推送标签 `claudenotes-v<版本号>`（版本号与 `app/package.json` 一致，可附加后缀，例如 `claudenotes-v3.8.6` 或 `claudenotes-v3.8.6-2`），GitHub Actions 中的 `ClaudeNotes Release`（`.github/workflows/claudenotes.yml`）会运行测试、构建 Windows（安装版与免安装 zip）、macOS（Apple 芯片与 Intel）、Linux（AppImage、deb、tar.gz）安装包，并在 Windows 上自动检查「安装 - 首次启动 - 卸载后 `ClaudeNotesData` 仍保留」，最后发布到 Releases。也可以在 Actions 页面手动运行，只构建不发布。
 
 安装包没有代码签名：Windows 首次运行会出现 SmartScreen 提示，macOS 需要在 系统设置 - 隐私与安全性 中允许打开。
+
+## 测试
+
+手动测试清单见 [TESTING.md](TESTING.md)。自动测试：`app/` 下 `pnpm test`（Electron 相关用例需要图形环境），`kernel/` 下 `go test -tags "fts5 sqlcipher" ./...`。
 
 ## 许可
 

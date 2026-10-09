@@ -26,7 +26,7 @@
 ## 当前状态（2026-10-09）
 
 - 已完成：独立身份（ClaudeNotes、端口 6826、`claudenotes://`）、安装目录便携数据、云端服务开关（默认关）、claude.ai 风格内置主题、AI 对话粘贴 / 块菜单 / 导入、Windows 安装包保留数据、三平台发布工作流
-- 粘贴丢格式已查清：claude.ai（含 Claude Code 网页版）**拖选复制时只往剪贴板放纯文本**（用户在 Windows 的 Chrome 上抓到 `types: ["text/plain"]`，样例是仓库根目录的 `claude-chat*.json`），格式信息本来就不存在；用回答下方的「复制」按钮（得到 Markdown）格式正常。粘贴代码没有问题，不要为这件事改粘贴逻辑
+- 粘贴丢格式已查清：claude.ai（含 Claude Code 网页版）**拖选复制时只往剪贴板放纯文本**（用户在 Windows 的 Chrome 上抓到 `types: ["text/plain"]`，样例已按用户要求删除），格式信息本来就不存在；用回答下方的「复制」按钮（得到 Markdown）格式正常。粘贴代码没有问题，不要为这件事改粘贴逻辑
 - 最近一轮已改：
   - 行内代码红字灰底，配色取自 `.ai` 仓库 `src/index.css` 的 `.inline-code`
   - 字体回退：正文英文 Source Serif 4（用户说的「Anthropic Serif」指的就是改动前的这个字体），中文微软雅黑（系统字体），界面用系统字体；删除 Figtree
@@ -55,7 +55,6 @@
 
 ### 2. 其他待办
 
-- 仓库根目录的样例 `claude-chat*.json` / `.png` 是用户上传的。JSON 用的是 CRLF 换行，和 `.gitattributes` 规定的 LF 不一致，所以 `git status` 会显示它们已修改，不要顺手提交。还要问用户是删掉，还是挪进 `app/src/aiChat/fixtures/`
 - 「误认成对话」：没有站点标记时，程序会在纯文本里找「问：答：user: assistant:」这类标签，普通回答也可能被当成对话（容器里复现过 3 例）。用户这一轮选择暂时不修
 - 发布工作流 `.github/workflows/claudenotes.yml` 还没真正跑过，修完拖动后手动运行一次，让用户拿到新安装包
 - `.ai` 仓库的旧分支 `claude/affectionate-albattani-iuwc6w` 等用户确认后再删

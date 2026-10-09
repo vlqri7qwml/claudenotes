@@ -1,0 +1,7 @@
+{
+  "types": [
+    "text/plain"
+  ],
+  "html": "",
+  "plain": "正常运行中，不过我有个问题，咱们编译了那么久，为什么一会要在go.mod中编译，一会又要在最外部项目编译？感觉好乱\r\n\r\nExplaining how each tool targets its own project file.\r\nExplaining how each tool targets its own project file.\r\n这个问题问得好，其实背后是同一条规律，理清了就不乱了。\r\n\r\n先想一想\r\n\r\n回忆一下：go build 当初为什么非要在 kernel 文件夹里跑？是因为它要找哪个文件？\r\n\r\n对，go.mod。那现在打包界面用的 pnpm，它要找的\"项目文件\"是哪个？前面我们也见过：package.json。\r\n\r\n规律就一条：每个工具，都要在它认识的\"项目文件\"所在的文件夹里运行。\r\n\r\n把你的项目摊开看：\r\n\r\nclaudenotes\\              ← 总项目（最外层）\r\n├── kernel\\               ← Go 子项目（后厨）\r\n│   └── go.mod            ← go 认这个\r\n├── app\\                  ← 网页子项目（店面）\r\n│   └── package.json      ← pnpm 认这个\r\n└── scripts\\\r\n    └── win-build.bat     ← 总指挥\r\n所以：\r\n\r\n手动编译内核时，你只用了 go，它只认 go.mod，所以必须进 kernel\r\n打包完整软件时，要同时动用 go 和 pnpm 两个工具，你一个人来回切文件夹太麻烦，于是有了 win-build.bat 这个总指挥。你在最外层把它叫起来，它自己会依次跑进 app 叫 pnpm 干活，再跑进 kernel 叫 go 干活\r\n你回去看脚本内容，里面就有这两行：\r\n\r\ncd /d \"%PROJECT_ROOT%\\app\"\r\ncd /d \"%PROJECT_ROOT%\\kernel\"\r\n就是总指挥在替你\"切换文件夹\"。\r\n\r\n小练习：判断对错\r\n\r\n如果你只想单独重新编译内核，应该在 claudenotes 最外层运行 go build。（对 / 错）\r\n运行 win-build.bat 时，你自己不需要进入 app 或 kernel，脚本会自己切换。（对 / 错）\r\npnpm install 必须在有 package.json 的文件夹里运行。（对 / 错）"
+}

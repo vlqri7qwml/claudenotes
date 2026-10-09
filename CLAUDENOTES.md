@@ -14,7 +14,7 @@ ClaudeNotes 是在思源笔记 v3.8.6 源码（本仓库，对应官方提交 `f
 | 默认工作空间 | `~/SiYuan` | `<安装目录>/ClaudeNotesData/workspace` |
 | Electron 数据、日志、缓存 | 系统应用数据目录 | `<安装目录>/ClaudeNotesData/electron` |
 | 云端服务（账号、云同步、集市、更新检查、公告、云端收集箱、模型目录） | 始终开启 | 默认关闭，可在 设置 - 账号与同步 或主菜单中开启 |
-| 界面风格 | 默认主题 | 内置明亮 / 暗黑主题改为 `.ai` 风格（暖色背景、`#D97757` 强调色、Figtree / Source Serif 4 字体）；第三方主题不受影响 |
+| 界面风格 | 默认主题 | 内置明亮 / 暗黑主题改为 claude.ai 风格（暖色背景、`#D97757` 强调色、无衬线正文、带边框的行内代码与代码块）；第三方主题不受影响 |
 | AI 对话 | 无 | 粘贴识别、块菜单「对话样式」、导入聊天记录 |
 | 自动下载更新安装包 | 支持 | 不提供（官方安装包是另一个软件，安装后不会升级 ClaudeNotes） |
 
@@ -110,5 +110,5 @@ pnpm exec electron-builder --linux --config electron-builder-linux.yml --publish
 
 - 本仓库（ClaudeNotes 的全部源码）沿用思源笔记的 AGPL-3.0 许可。分发安装包时必须同时提供对应的完整源码（例如保持本仓库公开，并在发布说明中注明源码位置），保留原有版权声明
 - 界面风格参考的 `.ai` 项目（仓库 `vlqri7qwml/.ai`）使用其自身的非商业许可；本仓库只借用了它的配色与字体风格，没有包含它的代码
-- 内置字体 Figtree、Source Serif 4 使用 SIL Open Font License 1.1，许可证见 `app/appearance/fonts/` 下各目录
+- 内置字体 Figtree 使用 SIL Open Font License 1.1，许可证见 `app/appearance/fonts/Figtree/LICENSE`
 - 「Claude」是 Anthropic 的商标，公开分发前建议确认软件名称的使用是否合适

@@ -1,0 +1,1 @@
+{"title": "Generic chat", "messages": [{"role": "system", "content": "be nice"}, {"role": "user", "content": "Hi"}, {"role": "assistant", "content": [{"type": "text", "text": "Hello!"}], "reasoning_content": "greet back"}]}

@@ -1,0 +1,30 @@
+[
+  {
+    "title": "Closures",
+    "create_time": 1700000000.5,
+    "update_time": 1700000100.5,
+    "conversation_id": "conv-1",
+    "current_node": "n5b",
+    "mapping": {
+      "root": {"id": "root", "message": null, "parent": null, "children": ["n1"]},
+      "n1": {"id": "n1", "parent": "root", "children": ["n2"], "message": {"author": {"role": "system"}, "content": {"content_type": "text", "parts": [""]}, "metadata": {"is_visually_hidden_from_conversation": true}}},
+      "n2": {"id": "n2", "parent": "n1", "children": ["n3"], "message": {"author": {"role": "user"}, "content": {"content_type": "multimodal_text", "parts": [{"content_type": "image_asset_pointer", "asset_pointer": "file-service://x"}, "What is in this picture?"]}, "recipient": "all"}},
+      "n3": {"id": "n3", "parent": "n2", "children": ["n4"], "message": {"author": {"role": "assistant"}, "content": {"content_type": "thoughts", "thoughts": [{"summary": "Looking", "content": "It shows a cat."}]}, "recipient": "all"}},
+      "n4": {"id": "n4", "parent": "n3", "children": ["n5a", "n5b"], "message": {"author": {"role": "assistant"}, "content": {"content_type": "text", "parts": ["A cat citeturn0search0sitting."]}, "recipient": "all"}},
+      "n5a": {"id": "n5a", "parent": "n4", "children": [], "message": {"author": {"role": "user"}, "content": {"content_type": "text", "parts": ["old branch question"]}, "recipient": "all"}},
+      "n5b": {"id": "n5b", "parent": "n4", "children": [], "message": {"author": {"role": "user"}, "content": {"content_type": "text", "parts": ["new branch question"]}, "recipient": "all"}}
+    }
+  },
+  {
+    "title": "Tool use",
+    "create_time": 1700000200,
+    "id": "conv-2",
+    "mapping": {
+      "a": {"id": "a", "parent": null, "children": ["b"], "message": null},
+      "b": {"id": "b", "parent": "a", "children": ["c"], "message": {"author": {"role": "user"}, "content": {"content_type": "text", "parts": ["Compute 2+2"]}, "recipient": "all"}},
+      "c": {"id": "c", "parent": "b", "children": ["d"], "message": {"author": {"role": "assistant"}, "content": {"content_type": "code", "text": "print(2+2)"}, "recipient": "python"}},
+      "d": {"id": "d", "parent": "c", "children": ["e"], "message": {"author": {"role": "tool"}, "content": {"content_type": "execution_output", "text": "4"}, "recipient": "all"}},
+      "e": {"id": "e", "parent": "d", "children": [], "message": {"author": {"role": "assistant"}, "content": {"content_type": "text", "parts": ["It is 4."]}, "recipient": "all"}}
+    }
+  }
+]

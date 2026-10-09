@@ -1,0 +1,79 @@
+productName: "ClaudeNotes"
+appId: "io.github.vlqri7qwml.claudenotes"
+publish: null
+asar: false
+compression: "normal"
+copyright: "ClaudeNotes, based on SiYuan © 2020-present Yunnan Liandi Technology Co., Ltd."
+artifactName: "ClaudeNotes-${version}-${os}.${ext}"
+extraMetadata:
+  main: "electron/main.js"
+directories:
+  output: "build"
+files:
+  - "electron"
+afterPack: "./scripts/afterPack.js"
+extraFiles:
+  - from: "../LICENSE"
+    to: "Resources/LICENSE"
+  - from: "../THIRD_PARTY_NOTICES.md"
+    to: "Resources/THIRD_PARTY_NOTICES.md"
+
+mac:
+  # 未签名：不使用官方证书与描述文件
+  identity: null
+  icon: "src/assets/icon.icns"
+  gatekeeperAssess: false
+  hardenedRuntime: false
+  extendInfo:
+    - NSMicrophoneUsageDescription: "This app requires microphone access to record audio."
+  minimumSystemVersion: "12.0.0"
+  protocols:
+    - name: "ClaudeNotes"
+      schemes:
+        - "claudenotes"
+  extraResources:
+    - from: "kernel-darwin"
+      to: "kernel"
+  target:
+    - target: "dmg"
+      arch: "x64"
+
+extraResources:
+  - from: "changelogs"
+    to: "changelogs"
+  - from: "stage"
+    to: "stage"
+  - from: "guide"
+    to: "guide"
+    filter: "!**/{.DS_Store,.git,.gitignore,.idea}"
+  - from: "appearance/boot"
+    to: "appearance/boot"
+    filter: "!**/{.DS_Store}"
+  - from: "appearance/covers"
+    to: "appearance/covers"
+    filter: "!**/{.DS_Store}"
+  - from: "appearance/icons"
+    to: "appearance/icons"
+    filter:
+      - "index.html"
+      - "litheness/**/*"
+  - from: "appearance/langs"
+    to: "appearance/langs"
+    filter: "!**/{.DS_Store}"
+  - from: "appearance/emojis"
+    to: "appearance/emojis"
+    filter: "!**/{.DS_Store}"
+  - from: "appearance/themes/midnight"
+    to: "appearance/themes/midnight"
+    filter: "!**/{.DS_Store,custom.css}"
+  - from: "appearance/themes/daylight"
+    to: "appearance/themes/daylight"
+    filter: "!**/{.DS_Store,custom.css}"
+  - from: "appearance/fonts"
+    to: "appearance/fonts"
+    filter: "!**/{.DS_Store}"
+  - from: "pandoc/pandoc-darwin-amd64.zip"
+    to: "pandoc.zip"
+  - from: "pandoc/pandoc-resources"
+    to: "pandoc-resources"
+    filter: "!**/{.DS_Store}"

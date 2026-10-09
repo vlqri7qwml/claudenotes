@@ -1,0 +1,13 @@
+[
+  {
+    "id": "ds-1",
+    "title": "所有权",
+    "inserted_at": "2025-02-01T10:00:00+08:00",
+    "updated_at": "2025-02-01T10:01:00+08:00",
+    "mapping": {
+      "root": {"id": "root", "parent": null, "children": ["1"], "message": null},
+      "1": {"id": "1", "parent": "root", "children": ["2"], "message": {"files": [], "model": "deepseek-reasoner", "inserted_at": "2025-02-01T10:00:00+08:00", "fragments": [{"type": "REQUEST", "content": "什么是所有权？"}]}},
+      "2": {"id": "2", "parent": "1", "children": [], "message": {"files": [], "model": "deepseek-reasoner", "inserted_at": "2025-02-01T10:00:10+08:00", "fragments": [{"type": "THINK", "content": "需要解释三条规则"}, {"type": "RESPONSE", "content": "所有权是 Rust 的核心机制。"}]}}
+    }
+  }
+]

@@ -1,3 +1,5 @@
+> **ClaudeNotes**：本仓库是基于思源笔记 v3.8.6 源码修改的本地笔记软件（.ai 界面风格、内置 AI 对话粘贴与导入、数据默认放在安装目录、可一键关闭云端服务）。与官方思源的区别、数据存储方式、构建与发布方法见 [CLAUDENOTES.md](CLAUDENOTES.md)。以下为思源笔记的原始说明。
+
 <p align="center">
 <img alt="SiYuan" src="https://b3log.org/images/brand/siyuan-128.png">
 <br>

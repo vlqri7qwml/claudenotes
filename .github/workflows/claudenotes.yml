@@ -1,0 +1,218 @@
+# ClaudeNotes 发布：推送 claudenotes-v<版本号> 标签（版本号与 app/package.json 一致，可加 -后缀）时
+# 构建 Windows / macOS / Linux 安装包并发布到本仓库的 Releases；也可在 Actions 页面手动运行，只构建不发布。
+name: ClaudeNotes Release
+
+on:
+  push:
+    tags:
+      - "claudenotes-v*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  prepare:
+    name: Prepare
+    runs-on: ubuntu-24.04
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      package_manager: ${{ steps.version.outputs.package_manager }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Read version
+        id: version
+        run: |
+          VERSION=$(jq -r .version "app/package.json")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "package_manager=$(jq -r .packageManager "app/package.json")" >> "$GITHUB_OUTPUT"
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            TAG="${GITHUB_REF_NAME#claudenotes-v}"
+            if [[ "$TAG" != "$VERSION" && "$TAG" != "$VERSION"-* ]]; then
+              echo "::error::Tag $GITHUB_REF_NAME does not match package.json version $VERSION"
+              exit 1
+            fi
+          fi
+
+  test:
+    name: Tests
+    needs: prepare
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: kernel/go.mod
+          cache-dependency-path: kernel/go.sum
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - run: npm install --global ${{ needs.prepare.outputs.package_manager }}
+      - name: Install frontend dependencies
+        run: pnpm install --frozen-lockfile
+        working-directory: app
+      - name: Check language files
+        run: python3 scripts/check-lang-keys.py
+        working-directory: .
+      - name: Typecheck and lint
+        run: |
+          pnpm run typecheck
+          pnpm exec eslint .
+        working-directory: app
+      - name: Frontend tests for ClaudeNotes changes
+        run: node --import tsx --test --test-concurrency=1 src/aiChat/aiChat.test.ts electron/portableData.test.js "src/config/entryVisibility/*.test.ts"
+        working-directory: app
+      - name: Kernel tests for ClaudeNotes changes
+        run: go test -tags "fts5 sqlcipher" ./util ./bazaar ./agent ./conf ./apicontract -count=1
+        working-directory: kernel
+
+  build:
+    name: Build ${{ matrix.name }}
+    needs: [prepare, test]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Windows
+            os: windows-latest
+            goos: windows
+            goarch: amd64
+            kernel: kernel/ClaudeNotes-Kernel.exe
+            builder: --win --config electron-builder.yml
+            artifacts: |
+              app/build/ClaudeNotes-*-win.exe
+              app/build/ClaudeNotes-*-win.zip
+          - name: macOS arm64
+            os: macos-latest
+            goos: darwin
+            goarch: arm64
+            kernel: kernel-darwin-arm64/ClaudeNotes-Kernel
+            builder: --mac --arm64 --config electron-builder-darwin-arm64.yml
+            artifacts: app/build/ClaudeNotes-*-mac-arm64.dmg
+          - name: macOS x64
+            os: macos-latest
+            goos: darwin
+            goarch: amd64
+            kernel: kernel-darwin/ClaudeNotes-Kernel
+            builder: --mac --x64 --config electron-builder-darwin.yml
+            artifacts: app/build/ClaudeNotes-*-mac.dmg
+          - name: Linux
+            os: ubuntu-24.04
+            goos: linux
+            goarch: amd64
+            kernel: kernel-linux/ClaudeNotes-Kernel
+            builder: --linux --config electron-builder-linux.yml
+            artifacts: |
+              app/build/ClaudeNotes-*-linux.AppImage
+              app/build/ClaudeNotes-*-linux.deb
+              app/build/ClaudeNotes-*-linux.tar.gz
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: kernel/go.mod
+          cache-dependency-path: kernel/go.sum
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - run: npm install --global ${{ needs.prepare.outputs.package_manager }}
+
+      - name: Install frontend dependencies
+        run: pnpm install --frozen-lockfile
+        working-directory: app
+      - name: Build frontend
+        run: pnpm run build
+        working-directory: app
+
+      - name: Windows kernel icon and version info
+        if: matrix.goos == 'windows'
+        shell: pwsh
+        run: |
+          go install github.com/josephspurrier/goversioninfo/cmd/goversioninfo@latest
+          & (Join-Path (go env GOPATH) "bin\goversioninfo.exe") -platform-specific=true -icon=resource/icon.ico -manifest=resource/goversioninfo.exe.manifest
+        working-directory: kernel
+
+      - name: Build kernel
+        shell: bash
+        run: go build -tags "fts5 sqlcipher" -o "../app/${{ matrix.kernel }}" -ldflags "-s -w -X github.com/siyuan-note/siyuan/kernel/util.Mode=prod" .
+        working-directory: kernel
+        env:
+          CGO_ENABLED: 1
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+
+      - name: Package
+        shell: bash
+        run: pnpm exec electron-builder ${{ matrix.builder }} --publish=never
+        working-directory: app
+        env:
+          # 未配置签名证书，安装包不签名
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+
+      - name: Check install, portable data folder and uninstall (Windows)
+        if: matrix.goos == 'windows'
+        shell: pwsh
+        working-directory: app
+        run: |
+          $dir = Join-Path $env:RUNNER_TEMP "cntest\ClaudeNotes"
+          $installer = Get-ChildItem build -Filter "ClaudeNotes-*-win.exe" | Select-Object -First 1
+          Start-Process -FilePath $installer.FullName -ArgumentList "/S", "/D=$dir" -Wait
+          if (-not (Test-Path "$dir\ClaudeNotes.exe")) { throw "ClaudeNotes.exe was not installed to $dir" }
+
+          # 首次启动后数据目录应出现在安装目录下，用户目录中不应出现 ClaudeNotes 的数据
+          $app = Start-Process -FilePath "$dir\ClaudeNotes.exe" -PassThru
+          Start-Sleep -Seconds 30
+          Get-Process -Name "ClaudeNotes", "ClaudeNotes-Kernel" -ErrorAction SilentlyContinue | Stop-Process -Force
+          Start-Sleep -Seconds 3
+          if (-not (Test-Path "$dir\ClaudeNotesData\electron")) { throw "ClaudeNotesData was not created in the install folder" }
+          foreach ($leak in @("$env:APPDATA\ClaudeNotes", "$env:LOCALAPPDATA\ClaudeNotes", "$env:USERPROFILE\.config\claudenotes", "$env:USERPROFILE\ClaudeNotes")) {
+            if (Test-Path $leak) { Write-Output "::warning::Unexpected data outside the install folder: $leak" }
+          }
+
+          # 卸载时删除程序文件，保留 ClaudeNotesData
+          New-Item -ItemType Directory -Force "$dir\ClaudeNotesData\workspace\data" | Out-Null
+          Set-Content -Path "$dir\ClaudeNotesData\workspace\data\keep.txt" -Value "keep"
+          $uninstaller = Get-ChildItem $dir -Filter "Uninstall*.exe" | Select-Object -First 1
+          Start-Process -FilePath $uninstaller.FullName -ArgumentList "/S", "_?=$dir" -Wait
+          if (Test-Path "$dir\ClaudeNotes.exe") { throw "Program files were not removed by the uninstaller" }
+          if (-not (Test-Path "$dir\ClaudeNotesData\workspace\data\keep.txt")) { throw "The uninstaller removed ClaudeNotesData" }
+          Write-Output "Install folder data kept after uninstall"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ClaudeNotes-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: ${{ matrix.artifacts }}
+          if-no-files-found: error
+
+  release:
+    name: Publish release
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [prepare, build]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          path: assets
+          merge-multiple: true
+      - run: ls -la assets
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.prepare.outputs.version }}
+        run: |
+          cat > notes.md <<EOF
+          ClaudeNotes ${GITHUB_REF_NAME#claudenotes-v}（基于思源笔记 v${VERSION} 源码）
+
+          - Windows：\`ClaudeNotes-${VERSION}-win.exe\` 安装版（可选择安装目录），\`ClaudeNotes-${VERSION}-win.zip\` 免安装版
+          - macOS：\`ClaudeNotes-${VERSION}-mac-arm64.dmg\`（Apple 芯片）、\`ClaudeNotes-${VERSION}-mac.dmg\`（Intel）
+          - Linux：AppImage、deb、tar.gz
+
+          笔记、配置和缓存保存在程序所在目录的 \`ClaudeNotesData\` 文件夹中，卸载和升级时保留；可与官方思源同时安装、互不影响。
+          安装包未签名：Windows 首次运行时在 SmartScreen 中选择「仍要运行」，macOS 在「系统设置 - 隐私与安全性」中允许打开。
+          源代码（AGPL-3.0）即本仓库。
+          EOF
+          gh release create "$GITHUB_REF_NAME" assets/* --repo "$GITHUB_REPOSITORY" --title "ClaudeNotes ${GITHUB_REF_NAME#claudenotes-v}" --notes-file notes.md

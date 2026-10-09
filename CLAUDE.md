@@ -25,13 +25,41 @@
 ## 当前状态（2026-10-09）
 
 - 已完成：独立身份（ClaudeNotes、端口 6826、`claudenotes://`）、安装目录便携数据、云端服务开关（默认关）、claude.ai 风格内置主题、AI 对话粘贴 / 块菜单 / 导入、Windows 安装包保留数据、三平台发布工作流
-- 最近修复：顶栏窗口拖动失效（边框改为描边）、正文改无衬线、行内代码和代码块加边框
-- 已知问题 / 待办：
-  - **Windows 上从 claude.ai 粘贴后丢格式**（像纯文本）：Linux 和浏览器里复现不出来，正在等用户说明复制来源（claude.ai 还是 Claude Code 网页版）、复制方式（拖选 Ctrl+C 还是复制按钮）、粘贴方式（Ctrl+V 还是纯文本粘贴）
-  - 发布工作流 `.github/workflows/claudenotes.yml` 还没真正跑过，用户手上的安装包可能不含最新修复
-  - 安装包未签名
-  - Linux 的 `~/.cache/mesa_shader_cache` 仍写在主目录（显卡驱动行为）
-  - 插件时代留下的 `custom-chat-role` 属性没有样式（现在用 `custom-sy-chat-role`）
+- 最近修复：顶栏窗口拖动失效（边框改为描边）；同一次把正文改成了无衬线，用户不认可，见后续目标 2
+- 已知问题见下面的「后续目标」
+
+## 后续目标（按优先级）
+
+### 1. 粘贴丢格式（最优先）
+
+用户反馈（Windows，2026-10-09）：claude.ai 聊天和 Claude Code 网页版都一样，**拖选后 Ctrl+C、Ctrl+V**，结果：
+
+- 列表、段落等结构丢失，像纯文本
+- 行内代码没有 claude.ai 那种「红字灰底」
+- 代码块 / 命令行没有圆角方框
+
+在 Linux 的 Chromium 里用仿 claude.ai 页面复制粘贴是正常的，所以要在用户的真实环境里找原因。方向：
+
+- 先确认用户装的是哪次构建，是否包含最新的 `app/src/aiChat/` 代码（发布工作流还没跑过）
+- 加一个调试手段（例如 设置 - 编辑器 - AI 对话 里的「导出最近一次粘贴的剪贴板内容」，或在开发者工具控制台打印），拿到 Windows 上真实的 `text/html` 和 `text/plain`，用它们做测试用例放进 `app/src/aiChat/fixtures/`
+- 对照 `app/src/protyle/util/paste.ts` 和 `app/src/aiChat/paste.ts`，确认这份 HTML 走的是哪条路径（是否被误判成对话后按纯文本解析、是否落到了只用 `text/plain` 的分支）
+- 修好后：行内代码显示为红字灰底小圆角，代码块是带圆角边框的方框，与 claude.ai 一致
+
+### 2. 字体
+
+用户要求：**只要 Anthropic Serif 和系统默认字体**，其他字体可以移除。上一轮把正文改成了无衬线，这是错的，要改回来。
+
+- 对照 claude.ai：回答正文用 Anthropic Serif，界面、提问用系统默认无衬线字体，代码用系统等宽字体
+- Anthropic Serif 是 Anthropic 的专有字体，**不能随安装包分发**，动手前先和用户确认：只在 CSS 里写 `"Anthropic Serif"`（用户电脑装了就用，没装回退到系统衬线字体），还是用户自己提供字体文件
+- `app/appearance/fonts/` 现有 Figtree（本项目加的，可删）、JetBrainsMono、LxgwWenKaiGB-Lite、Noto-COLRv1（思源原有）。删除前先搜索引用；Noto-COLRv1 是表情符号字体，删掉可能导致表情显示异常，需要告诉用户再决定
+- 相关文件：`app/appearance/themes/{daylight,midnight}/theme.css`（`--b3-font-family*`）、`app/src/assets/scss/business/_claudenotes.scss`、`app/src/assets/scss/protyle/_ai_chat.scss`、CLAUDENOTES.md 的字体与许可说明
+
+### 3. 其他待办
+
+- 发布工作流 `.github/workflows/claudenotes.yml` 还没真正跑过，修完上面两项后手动运行一次，让用户拿到新安装包
+- `.ai` 仓库的旧分支 `claude/affectionate-albattani-iuwc6w` 等用户确认后再删
+- 安装包未签名；Linux 的 `~/.cache/mesa_shader_cache` 仍写在主目录（显卡驱动行为）
+- 插件时代留下的 `custom-chat-role` 属性没有样式（现在用 `custom-sy-chat-role`）
 
 ## 代码索引
 

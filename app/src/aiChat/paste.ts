@@ -1,6 +1,7 @@
 import {detectPastedConversation} from "./parse/detect";
 import {turnsToKramdown} from "./render";
 import {isAIChatPasteEnabled, isAIChatThinkingIncluded} from "./preference";
+import {recordPasteAIChat} from "./pasteDebug";
 
 // 粘贴到这些块中时按原样处理，不识别对话
 const PLAIN_PASTE_BLOCK_TYPES = ["NodeCodeBlock", "NodeTable", "NodeAttributeView", "NodeHTMLBlock", "NodeMathBlock"];
@@ -32,6 +33,7 @@ export const getAIChatPasteBlockDOM = (protyle: IProtyle, textHTML: string, text
     if (!conversation) {
         return "";
     }
+    recordPasteAIChat(conversation.source, conversation.turns.length);
     return protyle.lute.Md2BlockDOM(turnsToKramdown(conversation.turns, conversation.source,
         {includeThinking: isAIChatThinkingIncluded()}));
 };

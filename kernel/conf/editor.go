@@ -202,7 +202,7 @@ func NewEditor() *Editor {
 		FontSizeScrollZoom:              false,
 		CodeSyntaxHighlightLineNum:      false,
 		CodeTabSpaces:                   0,
-		CodeLineWrap:                    false,
+		CodeLineWrap:                    true, // ClaudeNotes：与 claude.ai 一致，代码块默认自动换行
 		CodeLigatures:                   false,
 		DisplayBookmarkIcon:             true,
 		DisplayNetImgMark:               true,

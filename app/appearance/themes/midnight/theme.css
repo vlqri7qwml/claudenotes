@@ -306,9 +306,9 @@
     --b3-theme-on-surface-light: rgba(171, 164, 153, .68);
     --b3-theme-on-surface-lighter: #5A5853;
 
-    /* 字体：与 claude.ai 一致，界面和正文都用无衬线字体（Figtree 仅含拉丁字符，中日韩文字使用系统字体） */
-    --b3-font-family: var(--b3-font-family-emoji-reset), "Figtree", var(--b3-font-family-default);
-    --b3-font-family-protyle: var(--b3-font-family);
+    /* 字体：界面用系统字体；正文英文用 Source Serif 4（仅含拉丁字符），中日韩文字回退到系统字体 */
+    --b3-font-family: var(--b3-font-family-default);
+    --b3-font-family-protyle: var(--b3-font-family-emoji-reset), "Source Serif 4", "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, var(--b3-font-family-default);
     --b3-font-family-kbd: var(--b3-font-family);
 
     /* 背景 */
@@ -349,9 +349,10 @@
     --b3-point-shadow: 0 4px 12px rgba(0, 0, 0, .35), 0 0 0 1px var(--claudenotes-border);
     --b3-dialog-shadow: 0 12px 32px rgba(0, 0, 0, .45), 0 0 0 1px var(--claudenotes-border);
 
-    /* 代码片段背景 */
-    --b3-protyle-code-background: rgba(255, 255, 255, .07);
-    --claudenotes-code-border: rgba(222, 220, 209, .15);
+    /* 代码片段：行内代码与 claude.ai 一致，红字、深灰底、细边框 */
+    --b3-protyle-code-background: rgb(46, 46, 43);
+    --claudenotes-code-text: rgb(234, 134, 130);
+    --claudenotes-code-border: rgb(56, 55, 52);
     --claudenotes-code-block: rgba(0, 0, 0, .2);
 
     /* 所见即所得行内元素颜色 */

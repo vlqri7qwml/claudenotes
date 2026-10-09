@@ -8,39 +8,39 @@ html[data-cloud-service="off"] {
   }
 }
 
-// ClaudeNotes：界面与正文字体 Figtree（SIL OFL 1.1，仅包含拉丁字符，中日韩文字回退到系统字体）
+// ClaudeNotes：正文英文字体 Source Serif 4（SIL OFL 1.1，仅包含拉丁字符，中日韩文字回退到系统字体）
 $claudenotes-latin-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308,
 U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 $claudenotes-latin-ext-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329,
 U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 
 @font-face {
-  font-family: "Figtree";
+  font-family: "Source Serif 4";
   font-style: normal;
   font-display: swap;
-  font-weight: 300 900;
+  font-weight: 200 900;
   /*! /* webpackIgnore: true */
-  src: url(../../../appearance/fonts/Figtree/figtree-latin-wght-normal.woff2) format("woff2-variations");
+  src: url(../../../appearance/fonts/SourceSerif4/source-serif-4-latin-wght-normal.woff2) format("woff2-variations");
   unicode-range: $claudenotes-latin-range;
 }
 
 @font-face {
-  font-family: "Figtree";
+  font-family: "Source Serif 4";
   font-style: normal;
   font-display: swap;
-  font-weight: 300 900;
+  font-weight: 200 900;
   /*! /* webpackIgnore: true */
-  src: url(../../../appearance/fonts/Figtree/figtree-latin-ext-wght-normal.woff2) format("woff2-variations");
+  src: url(../../../appearance/fonts/SourceSerif4/source-serif-4-latin-ext-wght-normal.woff2) format("woff2-variations");
   unicode-range: $claudenotes-latin-ext-range;
 }
 
 @font-face {
-  font-family: "Figtree";
+  font-family: "Source Serif 4";
   font-style: italic;
   font-display: swap;
-  font-weight: 300 900;
+  font-weight: 200 900;
   /*! /* webpackIgnore: true */
-  src: url(../../../appearance/fonts/Figtree/figtree-latin-wght-italic.woff2) format("woff2-variations");
+  src: url(../../../appearance/fonts/SourceSerif4/source-serif-4-latin-wght-italic.woff2) format("woff2-variations");
   unicode-range: $claudenotes-latin-range;
 }
 
@@ -119,17 +119,19 @@ html[data-theme-mode="dark"][data-dark-theme="midnight"] {
     color: var(--claudenotes-text);
   }
 
-  // 编辑器：与 claude.ai 回答一致的行距、带细边框的行内代码与代码块
+  // 编辑器：衬线标题与正文、宽松行距，与 claude.ai 一致的红字行内代码和带细边框的代码块
   .protyle-title__input {
+    font-family: var(--b3-font-family-protyle);
     font-weight: 600;
     letter-spacing: -.01em;
   }
 
   .protyle-wysiwyg {
-    line-height: 1.65;
+    line-height: 1.7;
   }
 
   .protyle-wysiwyg span[data-type~="code"] {
+    color: var(--claudenotes-code-text);
     border: 1px solid var(--claudenotes-code-border);
     border-radius: .4em;
     padding: 0 .3em;

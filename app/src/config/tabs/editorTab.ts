@@ -13,6 +13,8 @@ import {
     setAIChatPasteEnabled,
     setAIChatThinkingIncluded,
 } from "../../aiChat/preference";
+import {exportLastPaste} from "../../aiChat/pasteDebug";
+import {showMessage} from "../../dialog/message";
 /// #if !BROWSER
 import {ipcRenderer} from "electron";
 /// #endif
@@ -434,6 +436,20 @@ const registerEditorAIChatGroup = (tab: SettingTabBuilder) => {
         desc: window.siyuan.languages.aiChatThinkingTip,
         readConfig: isAIChatThinkingIncluded,
         save: (value) => setAIChatThinkingIncluded(value === true),
+    });
+    group.button({
+        id: "aiChatExportPaste",
+        title: window.siyuan.languages.aiChatExportPaste,
+        desc: window.siyuan.languages.aiChatExportPasteTip,
+        label: window.siyuan.languages.export,
+        icon: "iconUpload",
+        afterMount: (root) => {
+            root.querySelector("#aiChatExportPaste")?.addEventListener("click", () => {
+                if (!exportLastPaste()) {
+                    showMessage(window.siyuan.languages.aiChatExportPasteEmpty);
+                }
+            });
+        },
     });
 };
 

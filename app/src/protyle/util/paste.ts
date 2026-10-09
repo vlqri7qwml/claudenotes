@@ -1,5 +1,6 @@
 import {Constants} from "../../constants";
 import {getAIChatPasteBlockDOM} from "../../aiChat/paste";
+import {recordPaste, recordPastePath, recordPastePluginReplaced} from "../../aiChat/pasteDebug";
 import {isEncryptedBox} from "../../util/pathName";
 import {preparePasteAssets} from "./pasteAssets";
 import {escapeHtml, escapeMarkdownPlainText} from "../../util/escape";
@@ -759,6 +760,10 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
         siyuanHTML = event.siyuanHTML;
         files = event.files;
     }
+    // 记录原始剪贴板内容，可在 设置 - 编辑器 - AI 对话 中导出排查粘贴问题
+    recordPaste("dataTransfer" in event ? "drop" : "paste",
+        "clipboardData" in event ? event.clipboardData.types : ("dataTransfer" in event ? event.dataTransfer.types : undefined),
+        textHTML, textPlain, siyuanHTML);
     // 先提取网页剪贴板中的内部块数据，再执行受限片段校验和清洗。
     if (textHTML && (blockDOMSanitizer || isInHarmony())) {
         const clipboard = getTextSiyuanFromTextHTML(textHTML, !!isInHarmony());
@@ -969,6 +974,7 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
             }
 
             if (response) {
+                recordPastePluginReplaced();
                 // 插件返回的是完整的剪贴板文本载荷，文件字段仅在显式返回时替换
                 const normalizedResponse = normalizePasteResponse(response, files);
                 textHTML = normalizedResponse.textHTML;
@@ -1032,6 +1038,7 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
         item.classList.remove("protyle-wysiwyg--hl");
     });
     if (blockDOMSanitizer && !siyuanHTML) {
+        recordPastePath("restricted");
         // 受限片段保留选中文字附加引用或链接的行为，代码内容仍按纯文本粘贴。
         if (nodeElement.getAttribute("data-type") !== "NodeCodeBlock" &&
             !protyle.toolbar.getCurrentType(range).includes("code") && pastePlainTextLink(protyle, range, textPlain)) {
@@ -1046,10 +1053,12 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
     const code = processPasteCode(textHTML, textPlain, originalTextHTML, protyle);
     if (nodeElement.getAttribute("data-type") === "NodeCodeBlock" ||
         protyle.toolbar.getCurrentType(range).includes("code")) {
+        recordPastePath("codeBlock");
         // https://github.com/siyuan-note/siyuan/issues/13552
         insertAtPasteRange(removeZWJ(textPlain).replace(/```/g, "\u200D```"), range);
         return;
     } else if (siyuanHTML) {
+        recordPastePath("blockDOM");
         if (isEncryptedBox(protyle.notebookId)) {
             const prepared = await preparePasteAssets(protyle.notebookId, siyuanHTML);
             if (prepared === null) {
@@ -1235,6 +1244,7 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
         highlightRender(protyle.wysiwyg.element);
         avRender(protyle.wysiwyg.element, protyle);
     } else if (code) {
+        recordPastePath("code");
         if (!code.startsWith('<div data-type="NodeCodeBlock" class="code-block" data-node-id="')) {
             // 原有代码在行内元素中粘贴会嵌套
             insertAtPasteRange(code, range);
@@ -1261,6 +1271,7 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
             }
             const result = response?.data as { converted?: unknown, dom?: unknown };
             if (response?.code === 0 && result?.converted === true && typeof result.dom === "string" && result.dom.trim() !== "") {
+                recordPastePath("wps");
                 insertConvertedBlockDOM(protyle, result.dom, range);
                 return;
             }
@@ -1334,6 +1345,7 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
             }
         }
         if (isHTML) {
+            recordPastePath("html");
             const tempElement = document.createElement("div");
             tempElement.innerHTML = textHTML;
             if (!getHostCapabilities().localFileSystem) {
@@ -1358,6 +1370,7 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
                 }
             }
             if (linkElement?.getAttribute("href")) {
+                recordPastePath("link");
                 const selectText = stripSemanticMarkersFromRangeText(range).split(Constants.ZWSP).join("");
                 protyle.toolbar.range = range;
                 const aElements = protyle.toolbar.setInlineMark(protyle, "a", "range", {
@@ -1529,12 +1542,15 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
             insertConvertedBlockDOM(protyle, conversionResponse.data, range);
             return;
         } else if (files && files.length > 0) {
+            recordPastePath("files");
             uploadFiles(protyle, files, undefined, avAssetUploadSuccess, undefined, directAssetUploadOptions);
             return;
         } else if (textPlain.trim() !== "" && (files && files.length === 0 || !files)) {
             if (pastePlainTextLink(protyle, range, textPlain)) {
+                recordPastePath("link");
                 return;
             }
+            recordPastePath("markdown");
             let textPlainDom: string;
             textPlain = stripPastedIALDataAttributes(textPlain);
 

@@ -11,6 +11,9 @@ const source = ts.transpileModule(readFileSync(join(process.cwd(), "src/protyle/
     compilerOptions: {module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022},
 }).outputText;
 
+// 粘贴记录只用于导出排查，测试中替换为空实现
+const pasteDebugMock = {recordPaste: () => {}, recordPastePath: () => {}, recordPastePluginReplaced: () => {}};
+
 const createHarness = (disabled = false, richPaste = false) => {
     const uploads: Array<{files: unknown; options: {document: {rootID: string}; insertPosition: unknown}}> = [];
     const position = {range: {startContainer: {}}};
@@ -21,6 +24,7 @@ const createHarness = (disabled = false, richPaste = false) => {
     let checkedBlockDOM = "";
     const restrictedFallback = new Error("restricted fallback");
     const mocks: Record<string, unknown> = {
+        "../../aiChat/pasteDebug": pasteDebugMock,
         "../../constants": {Constants: {SIYUAN_ASSETS_IMAGE: [".png", ".jpg"]}},
         "../runtimeCapabilities": {
             getProtyleBlockDOMSanitizer: () => (html: string) => html,
@@ -173,6 +177,7 @@ describe("restricted cell selected text paste", () => {
         const block = {classList: {contains: () => false},
             getAttribute: () => options.code ? "NodeCodeBlock" : "NodeParagraph"};
         const mocks: Record<string, unknown> = {
+            "../../aiChat/pasteDebug": pasteDebugMock,
             "../../constants": {Constants: {ZWSP: "\u200b"}},
             "../runtimeCapabilities": {
                 getProtyleBlockDOMSanitizer: () => (html: string) => html,

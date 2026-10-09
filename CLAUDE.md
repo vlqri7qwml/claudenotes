@@ -26,38 +26,38 @@
 ## 当前状态（2026-10-09）
 
 - 已完成：独立身份（ClaudeNotes、端口 6826、`claudenotes://`）、安装目录便携数据、云端服务开关（默认关）、claude.ai 风格内置主题、AI 对话粘贴 / 块菜单 / 导入、Windows 安装包保留数据、三平台发布工作流
-- 最近修复：顶栏窗口拖动失效（边框改为描边）；同一次把正文改成了无衬线，用户不认可，见后续目标 2
+- 粘贴丢格式已查清：claude.ai（含 Claude Code 网页版）**拖选复制时只往剪贴板放纯文本**（用户在 Windows 的 Chrome 上抓到 `types: ["text/plain"]`，样例是仓库根目录的 `claude-chat*.json`），格式信息本来就不存在；用回答下方的「复制」按钮（得到 Markdown）格式正常。粘贴代码没有问题，不要为这件事改粘贴逻辑
+- 最近一轮已改：
+  - 行内代码红字灰底，配色取自 `.ai` 仓库 `src/index.css` 的 `.inline-code`
+  - 字体回退：正文英文 Source Serif 4（用户说的「Anthropic Serif」指的就是改动前的这个字体），中文微软雅黑（系统字体），界面用系统字体；删除 Figtree
+  - 代码块默认自动换行：`kernel/conf/editor.go`，只影响新建的工作空间
+  - 设置 - 编辑器 - AI 对话 新增「导出最近一次粘贴内容」：`app/src/aiChat/pasteDebug.ts`，在 `paste.ts` 各分支记录走了哪条路径
 - 已知问题见下面的「后续目标」
 
 ## 后续目标（按优先级）
 
-### 1. 粘贴丢格式（最优先）
+### 1. 窗口拖不动（最优先）
 
-用户反馈（Windows，2026-10-09）：claude.ai 聊天和 Claude Code 网页版都一样，**拖选后 Ctrl+C、Ctrl+V**，结果：
+用户反馈（Windows）：构建已包含 `5fa3e90`（边框改描边），窗口仍然拖不动。只读排查的结论：
 
-- 列表、段落等结构丢失，像纯文本
-- 行内代码没有 claude.ai 那种「红字灰底」
-- 代码块 / 命令行没有圆角方框
+- 默认开启「页签融合至顶栏」（`HideToolbar: true`），这时能拖动的只有三小块：
+  - `#drag::before` / `::after` 两条细条，默认 8px，左侧栏打开时左条会加宽
+  - 页签栏「+」和「∨」之间的空白，由 `app/src/layout/tabUtil.ts` 的 `setTabPosition` 设置；页签多了会缩到接近 0
+- 这套逻辑和思源官方一样。ClaudeNotes 把整条顶栏涂成同一个颜色，看起来整条都是标题栏，用户容易在拖不动的地方拖
+- 已排除：
+  - 描边改法本身
+  - Electron 窗口参数（和官方一样）
+  - `style.WebkitAppRegion` 写法（在 Chromium 141 里实测有效）
+- 注意：新版 Chromium 把 `-webkit-app-region: none` 计算成 `no-drag`
+- 下一步：等用户在 Windows 开发者工具的控制台跑诊断代码（红色是可拖动区域，蓝色是不可拖动区域），上传 `drag.json` 和截图，并说明在红色区域能不能拖：
+  - 能拖：把页签栏的整块空白设成可拖动，页签、按钮和弹出层设成 `no-drag`
+  - 也拖不动：查全屏状态、Windows 缩放等窗口层面的原因
 
-云端容器里用仿 claude.ai 页面模拟复制粘贴是正常的，但那不是用户的环境，要在用户的 Windows 上找原因。方向：
+### 2. 其他待办
 
-- 先确认用户装的是哪次构建，是否包含最新的 `app/src/aiChat/` 代码（发布工作流还没跑过）
-- 加一个调试手段（例如 设置 - 编辑器 - AI 对话 里的「导出最近一次粘贴的剪贴板内容」，或在开发者工具控制台打印），拿到 Windows 上真实的 `text/html` 和 `text/plain`，用它们做测试用例放进 `app/src/aiChat/fixtures/`
-- 对照 `app/src/protyle/util/paste.ts` 和 `app/src/aiChat/paste.ts`，确认这份 HTML 走的是哪条路径（是否被误判成对话后按纯文本解析、是否落到了只用 `text/plain` 的分支）
-- 修好后：行内代码显示为红字灰底小圆角，代码块是带圆角边框的方框，与 claude.ai 一致
-
-### 2. 字体
-
-用户要求：**只要 Anthropic Serif 和系统默认字体**，其他字体可以移除。上一轮把正文改成了无衬线，这是错的，要改回来。
-
-- 对照 claude.ai：回答正文用 Anthropic Serif，界面、提问用系统默认无衬线字体，代码用系统等宽字体
-- Anthropic Serif 是 Anthropic 的专有字体，**不能随安装包分发**，动手前先和用户确认：只在 CSS 里写 `"Anthropic Serif"`（用户电脑装了就用，没装回退到系统衬线字体），还是用户自己提供字体文件
-- `app/appearance/fonts/` 现有 Figtree（本项目加的，可删）、JetBrainsMono、LxgwWenKaiGB-Lite、Noto-COLRv1（思源原有）。删除前先搜索引用；Noto-COLRv1 是表情符号字体，删掉可能导致表情显示异常，需要告诉用户再决定
-- 相关文件：`app/appearance/themes/{daylight,midnight}/theme.css`（`--b3-font-family*`）、`app/src/assets/scss/business/_claudenotes.scss`、`app/src/assets/scss/protyle/_ai_chat.scss`、CLAUDENOTES.md 的字体与许可说明
-
-### 3. 其他待办
-
-- 发布工作流 `.github/workflows/claudenotes.yml` 还没真正跑过，修完上面两项后手动运行一次，让用户拿到新安装包
+- 仓库根目录的样例 `claude-chat*.json` / `.png` 是用户上传的。JSON 用的是 CRLF 换行，和 `.gitattributes` 规定的 LF 不一致，所以 `git status` 会显示它们已修改，不要顺手提交。还要问用户是删掉，还是挪进 `app/src/aiChat/fixtures/`
+- 「误认成对话」：没有站点标记时，程序会在纯文本里找「问：答：user: assistant:」这类标签，普通回答也可能被当成对话（容器里复现过 3 例）。用户这一轮选择暂时不修
+- 发布工作流 `.github/workflows/claudenotes.yml` 还没真正跑过，修完拖动后手动运行一次，让用户拿到新安装包
 - `.ai` 仓库的旧分支 `claude/affectionate-albattani-iuwc6w` 等用户确认后再删
 - Windows 安装包未签名，首次运行会出现 SmartScreen 提示
 - 插件时代留下的 `custom-chat-role` 属性没有样式（现在用 `custom-sy-chat-role`）
@@ -66,7 +66,7 @@
 
 | 功能 | 位置 |
 | --- | --- |
-| AI 对话核心 | `app/src/aiChat/`：`paste.ts`（`getAIChatPasteBlockDOM`）、`parse/{html,text,detect,files}.ts`、`render.ts`、`importer.ts`、`dialog.ts`、`preference.ts`、`types.ts` |
+| AI 对话核心 | `app/src/aiChat/`：`paste.ts`（`getAIChatPasteBlockDOM`）、`parse/{html,text,detect,files}.ts`、`render.ts`、`pasteDebug.ts`（导出最近一次粘贴）、`importer.ts`、`dialog.ts`、`preference.ts`、`types.ts` |
 | AI 对话测试 | `app/src/aiChat/aiChat.test.ts`、`testHelpers.ts`、`fixtures/` |
 | 粘贴入口 | `app/src/protyle/util/paste.ts` |
 | 块菜单「对话样式」 | `app/src/protyle/gutter/index.ts` 的 `genChatRole` |

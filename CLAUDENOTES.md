@@ -14,7 +14,7 @@ ClaudeNotes 是在思源笔记 v3.8.6 源码（本仓库，对应官方提交 `f
 | 默认工作空间 | `~/SiYuan` | `<安装目录>/ClaudeNotesData/workspace` |
 | Electron 数据、日志、缓存 | 系统应用数据目录 | `<安装目录>/ClaudeNotesData/electron` |
 | 云端服务（账号、云同步、集市、更新检查、公告、云端收集箱、模型目录） | 始终开启 | 默认关闭，可在 设置 - 账号与同步 或主菜单中开启 |
-| 界面风格 | 默认主题 | 内置明亮 / 暗黑主题改为 claude.ai 风格（暖色背景、`#D97757` 强调色、无衬线正文、带边框的行内代码与代码块）；第三方主题不受影响 |
+| 界面风格 | 默认主题 | 内置明亮 / 暗黑主题改为 claude.ai 风格（暖色背景、`#D97757` 强调色、衬线正文、红字行内代码、带边框的代码块）；第三方主题不受影响 |
 | AI 对话 | 无 | 粘贴识别、块菜单「对话样式」、导入聊天记录 |
 | 自动下载更新安装包 | 支持 | 不提供（官方安装包是另一个软件，安装后不会升级 ClaudeNotes） |
 
@@ -74,6 +74,8 @@ ClaudeNotes 新增的数据都使用思源原有的扩展点，官方思源会�
 ## AI 对话
 
 - 粘贴：从 Claude、ChatGPT、Gemini、DeepSeek、Kimi、豆包网页复制的对话，或带「User: / Assistant:」等说话人标签的文本，粘贴后每一轮生成一个对话块；在代码块、表格内粘贴以及「粘贴并保留源格式」不受影响。可在 设置 - 编辑器 - AI 对话 中关闭
+- claude.ai 拖选复制时只往剪贴板放纯文本，粘贴后没有列表、代码块等格式；要保留格式，请用回答下方的「复制」按钮（得到 Markdown）
+- 排查粘贴问题：设置 - 编辑器 - AI 对话 - 导出最近一次粘贴内容，把最近一次粘贴的原始剪贴板内容和处理方式保存为 JSON（只保存在内存中，重启后清空）
 - 块菜单：对话样式 - 设为提问 / 设为回答 / 设为思考过程 / 取消对话样式，支持撤销
 - 导入：笔记本或文档右键 导入 - AI 聊天记录（导入到该位置），或 主菜单 - 导入聊天记录（选择笔记本，默认「AI 对话」）。支持 Claude / ChatGPT / DeepSeek 官方导出（`.zip` 或 `conversations.json`）、通用 JSON、Markdown、TXT 以及网页另存为的 HTML；每个对话一篇文档，路径为 `<导入位置>/<来源>/<标题>`
 
@@ -116,5 +118,5 @@ pnpm exec electron-builder --linux --config electron-builder-linux.yml --publish
 
 - 本仓库（ClaudeNotes 的全部源码）沿用思源笔记的 AGPL-3.0 许可。分发安装包时必须同时提供对应的完整源码（例如保持本仓库公开，并在发布说明中注明源码位置），保留原有版权声明
 - 界面风格参考的 `.ai` 项目（仓库 `vlqri7qwml/.ai`）使用其自身的非商业许可；本仓库只借用了它的配色与字体风格，没有包含它的代码
-- 内置字体 Figtree 使用 SIL Open Font License 1.1，许可证见 `app/appearance/fonts/Figtree/LICENSE`
+- 内置字体 Source Serif 4（正文英文）使用 SIL Open Font License 1.1，许可证见 `app/appearance/fonts/SourceSerif4/LICENSE`；界面和中文使用系统字体
 - 「Claude」是 Anthropic 的商标，公开分发前建议确认软件名称的使用是否合适

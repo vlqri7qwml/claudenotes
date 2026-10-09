@@ -13,6 +13,7 @@
 5. 用户只批准了其中一部分，就只做那一部分；做完一部分先汇报，再问下一步。不顺手扩大范围。
 6. 被中途叫停时，停在安全点（不留改了一半的文件），说明已改什么、没改什么，然后等待。
 7. 一律用中文回复，少用英文术语；提交信息用英文。
+8. **用户只用 Windows 版**。回复、方案、测试步骤、构建命令一律按 Windows 写（路径用 `D:\...`、命令用 cmd / PowerShell）。不要拿 Linux / macOS 的情况当结论，也不要在回复里提它们。云端会话的容器是 Linux，只能用来跑测试和初步复现；容器里正常不代表 Windows 上正常，最终以用户在 Windows 上的结果为准，需要时请用户在 Windows 上操作并反馈。
 
 ## 与 AGENTS.md 的关系
 
@@ -38,7 +39,7 @@
 - 行内代码没有 claude.ai 那种「红字灰底」
 - 代码块 / 命令行没有圆角方框
 
-在 Linux 的 Chromium 里用仿 claude.ai 页面复制粘贴是正常的，所以要在用户的真实环境里找原因。方向：
+云端容器里用仿 claude.ai 页面模拟复制粘贴是正常的，但那不是用户的环境，要在用户的 Windows 上找原因。方向：
 
 - 先确认用户装的是哪次构建，是否包含最新的 `app/src/aiChat/` 代码（发布工作流还没跑过）
 - 加一个调试手段（例如 设置 - 编辑器 - AI 对话 里的「导出最近一次粘贴的剪贴板内容」，或在开发者工具控制台打印），拿到 Windows 上真实的 `text/html` 和 `text/plain`，用它们做测试用例放进 `app/src/aiChat/fixtures/`
@@ -58,7 +59,7 @@
 
 - 发布工作流 `.github/workflows/claudenotes.yml` 还没真正跑过，修完上面两项后手动运行一次，让用户拿到新安装包
 - `.ai` 仓库的旧分支 `claude/affectionate-albattani-iuwc6w` 等用户确认后再删
-- 安装包未签名；Linux 的 `~/.cache/mesa_shader_cache` 仍写在主目录（显卡驱动行为）
+- Windows 安装包未签名，首次运行会出现 SmartScreen 提示
 - 插件时代留下的 `custom-chat-role` 属性没有样式（现在用 `custom-sy-chat-role`）
 
 ## 代码索引
@@ -81,17 +82,42 @@
 
 注意：顶栏拖动区域由 `app/src/layout/tabUtil.ts` 的 `setTabPosition` 计算，要求页签栏和编辑区左右边缘完全对齐，给 `.layout__center` 加边框会让拖动失效。
 
-## 构建与测试
+## 构建与测试（Windows）
 
-```bash
-cd app && pnpm install && pnpm run build          # 前端
-pnpm run typecheck && pnpm exec eslint .           # 类型检查与代码检查
-node --import tsx --test --test-concurrency=1 src/aiChat/aiChat.test.ts electron/portableData.test.js "src/config/entryVisibility/*.test.ts"
-cd ../kernel && go build -tags "fts5 sqlcipher" -o ../app/kernel-linux/ClaudeNotes-Kernel .
-go test -tags "fts5 sqlcipher" ./util ./bazaar ./agent ./conf ./apicontract -count=1
+准备：Go（版本见 `kernel/go.mod`）、Node.js 24、pnpm、MinGW-w64 的 gcc（内核必须开 CGO，没有 gcc 会报 `undefined: loadPlatformFonts`）。
+
+一键构建安装包（在仓库根目录的 cmd 中）：
+
+```bat
+scripts\win-build.bat --target=amd64
 ```
 
-内核必须开 CGO：Windows 需要 MinGW-w64 的 gcc，否则报 `undefined: loadPlatformFonts`。调试时运行 `ClaudeNotes-Kernel serve --wd=<app 目录> --workspace=<工作空间>`，浏览器打开 `http://127.0.0.1:<端口>/stage/build/desktop/`。打包命令见 CLAUDENOTES.md。
+分步构建（cmd；PowerShell 中把 `set CGO_ENABLED=1` 换成 `$env:CGO_ENABLED=1`）：
+
+```bat
+cd app
+pnpm install
+pnpm run build
+cd ..\kernel
+set CGO_ENABLED=1
+go build -tags "fts5 sqlcipher" -ldflags "-s -w -X github.com/siyuan-note/siyuan/kernel/util.Mode=prod" -o ..\app\kernel\ClaudeNotes-Kernel.exe .
+cd ..\app
+pnpm exec electron-builder --win --config electron-builder.yml --publish=never
+```
+
+安装包输出到 `app\build\`。也可以在 GitHub 的 Actions 页面手动运行 `ClaudeNotes Release`，下载产物里的 Windows 安装包。
+
+测试（在 `app` 目录）：
+
+```bat
+pnpm run typecheck
+pnpm exec eslint .
+node --import tsx --test --test-concurrency=1 src/aiChat/aiChat.test.ts electron/portableData.test.js "src/config/entryVisibility/*.test.ts"
+```
+
+内核测试（在 `kernel` 目录）：`go test -tags "fts5 sqlcipher" ./util ./bazaar ./agent ./conf ./apicontract -count=1`。
+
+调试：运行 `ClaudeNotes-Kernel.exe serve --wd=<app 目录> --workspace=<工作空间>`，浏览器打开 `http://127.0.0.1:<端口>/stage/build/desktop/`；桌面版的开发者工具在 主菜单 - 开发者工具（菜单项 id `debug`）。
 
 ## 关于 `.ai` 仓库
 

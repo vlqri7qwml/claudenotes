@@ -80,6 +80,7 @@ const {createNotebookSystemLock, prepareNotebookSystemLock} = require("./noteboo
 const {
     readAccessibilitySetting, writeAccessibilitySetting, getAccessibilityOverride, configureAccessibility,
 } = require("./accessibility");
+const {readInputFontSize, writeInputFontSize} = require("./inputFontSize");
 
 const {
     readLinuxInputMethodSetting, writeLinuxInputMethodSetting, getLinuxInputMethodOverride, configureLinuxInputMethod,
@@ -119,6 +120,8 @@ if (useDataTempDir) {
 const windowStatePath = path.join(confDir, "windowState.json");
 const linuxInputMethodSettingPath = path.join(confDir, "linux-input-method.json");
 const accessibilitySettingPath = path.join(confDir, "accessibility.json");
+// ClaudeNotes：新输入字号，所有工作空间共用
+const inputFontSizePath = path.join(confDir, "editor-input.json");
 const appCrashLogPath = path.join(confDir, "app.crash.log");
 const appCrashMarkerPath = path.join(confDir, "app.crash.json");
 const systemShutdownNone = 0;
@@ -3195,6 +3198,16 @@ app.whenReady().then(() => {
                 accessibilityEnabled = data.enabled;
             }
             return {enabled: accessibilityEnabled, override: accessibilityOverride};
+        }
+        if (data.cmd === "getInputFontSize" || data.cmd === "setInputFontSize") {
+            if (!initializedWindowIds.has(event.sender.id) ||
+                !getWindowKernelTarget(event.sender.id) || event.senderFrame !== event.sender.mainFrame) {
+                throw new Error("Input font size is unavailable");
+            }
+            if (data.cmd === "setInputFontSize") {
+                writeInputFontSize(inputFontSizePath, data.fontSize);
+            }
+            return {fontSize: readInputFontSize(inputFontSizePath)};
         }
         if (data.cmd === "remoteConnections") {
             if (!getWindowKernelTarget(event.sender.id) || event.senderFrame !== event.sender.mainFrame) {

@@ -872,6 +872,8 @@ func InitConf() {
 		}
 	}
 
+	applyClaudeNotesEditorDefaultsOnce()
+
 	Conf.Save()
 
 	// 云端服务开关：未开启时内核不访问思源官方云端

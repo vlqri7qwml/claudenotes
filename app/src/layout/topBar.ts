@@ -13,6 +13,7 @@ import {hideTooltip} from "../dialog/tooltip";
 import {setMode} from "../util/assets";
 import {openSetting} from "../config";
 import {openSearch} from "../search/spread";
+import {openInputFontSizeMenu} from "../claudenotes/inputFontSizeMenu";
 import type {App} from "../index";
 /// #if !BROWSER
 import {ipcRenderer, webFrame} from "electron";
@@ -113,6 +114,9 @@ export const initBar = (app: App) => {
 </div>
 <div id="barZoom" data-topbar-entry="barZoom" class="toolbar__item ariaLabel${(window.siyuan.storage[Constants.LOCAL_ZOOM] === 1 || isBrowser()) ? " fn__none" : ""}" aria-label="${window.siyuan.languages.zoom}">
     <svg><use xlink:href="#iconZoom${window.siyuan.storage[Constants.LOCAL_ZOOM] > 1 ? "In" : "Out"}"></use></svg>
+</div>
+<div id="barInputFontSize" data-topbar-entry="barInputFontSize" class="toolbar__item ariaLabel${window.siyuan.config.readonly ? " fn__none" : ""}" aria-label="${window.siyuan.languages.inputFontSize}">
+    <svg><use xlink:href="#iconFont"></use></svg>
 </div>
 <div id="barMode" data-topbar-entry="barMode" class="toolbar__item ariaLabel${window.siyuan.config.readonly ? " fn__none" : ""}" aria-label="${window.siyuan.languages.appearanceMode}">
     <svg><use xlink:href="#icon${window.siyuan.config.appearance.modeOS ? "Mode" : (window.siyuan.config.appearance.mode === 0 ? "Light" : "Dark")}"></use></svg>
@@ -215,6 +219,10 @@ ${isInMobileApp() ? `<div id="barExit" data-topbar-entry="barExit" class="ft__er
                     errorExit: true,
                     cb: exitSiYuan,
                 });
+                break;
+            } else if (targetId === "barInputFontSize") {
+                void openInputFontSizeMenu(target);
+                event.stopPropagation();
                 break;
             } else if (targetId === "barMode") {
                 if (!window.siyuan.menus.menu.element.classList.contains("fn__none") &&

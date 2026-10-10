@@ -195,6 +195,7 @@ test("top bar catalog includes a fixed drag boundary in built-in DOM order", () 
         "barCommand",
         "barSearch",
         "barZoom",
+        "barInputFontSize",
         "barMode",
         "barExit",
     ]);

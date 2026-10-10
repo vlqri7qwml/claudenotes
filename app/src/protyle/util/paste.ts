@@ -1,6 +1,7 @@
 import {Constants} from "../../constants";
 import {getAIChatPasteBlockDOM} from "../../aiChat/paste";
 import {recordPaste, recordPastePath, recordPastePluginReplaced} from "../../aiChat/pasteDebug";
+import {applyInputFontSizeToBlockDOM, applyInputFontSizeToEmptyBlock} from "../../claudenotes/inputFontSize";
 import {isEncryptedBox} from "../../util/pathName";
 import {preparePasteAssets} from "./pasteAssets";
 import {escapeHtml, escapeMarkdownPlainText} from "../../util/escape";
@@ -666,7 +667,9 @@ const pasteCrossBlockRange = (protyle: IProtyle, tempElement: HTMLElement, range
 
 const insertConvertedBlockDOM = (protyle: IProtyle, dom: string, range: Range) => {
     protyle.toolbar.range = range;
-    insertHTML(dom, protyle, false, true, true);
+    // ClaudeNotes：外部粘贴的段落和表格使用新输入字号
+    applyInputFontSizeToEmptyBlock(hasClosestBlock(range.startContainer));
+    insertHTML(applyInputFontSizeToBlockDOM(dom), protyle, false, true, true);
     protyle.wysiwyg.element.querySelectorAll('[data-type~="block-ref"]').forEach(item => {
         if (item.textContent === "") {
             fetchPost("/api/block/getRefText", {id: item.getAttribute("data-id")}, (response) => {
@@ -915,7 +918,7 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
         const chatBlockDOM = getAIChatPasteBlockDOM(protyle, textHTML, textPlain, initialBlockElement,
             pasteInsertPosition.range);
         if (chatBlockDOM) {
-            siyuanHTML = chatBlockDOM;
+            siyuanHTML = applyInputFontSizeToBlockDOM(chatBlockDOM);
             textHTML = "";
             originalTextHTML = "";
         }
@@ -1595,7 +1598,8 @@ export const paste = async (protyle: IProtyle, event: (ClipboardEvent | DragEven
                 });
                 textPlainDom = tempElement.innerHTML;
             }
-            insertAtPasteRange(textPlainDom, range, false, true);
+            applyInputFontSizeToEmptyBlock(nodeElement);
+            insertAtPasteRange(applyInputFontSizeToBlockDOM(textPlainDom), range, false, true);
         }
         blockRender(protyle, protyle.wysiwyg.element);
         processRender(protyle.wysiwyg.element);

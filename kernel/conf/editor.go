@@ -195,6 +195,15 @@ func normalizeAssetOpenAction(action, fallback string) string {
 	}
 }
 
+// ApplyClaudeNotesEditorDefaults 设置 ClaudeNotes 的编辑器默认值：代码块自动换行、正文居中显示，与 claude.ai 一致。
+func ApplyClaudeNotesEditorDefaults(editor *Editor) {
+	if nil == editor {
+		return
+	}
+	editor.CodeLineWrap = true
+	editor.FullWidth = false
+}
+
 func NewEditor() *Editor {
 	return &Editor{
 		CursorSurroundingLines:          0,
@@ -219,7 +228,7 @@ func NewEditor() *Editor {
 		BlockRefDynamicAnchorTextMaxLen: 96,
 		AssetOpen:                       NewAssetOpen(),
 		PlantUMLServePath:               "https://www.plantuml.com/plantuml/svg/~1",
-		FullWidth:                       true,
+		FullWidth:                       false, // ClaudeNotes：与 claude.ai 一致，正文默认居中显示
 		KaTexMacros:                     "{}",
 		ReadOnly:                        false,
 		EmbedBlockBreadcrumb:            false,

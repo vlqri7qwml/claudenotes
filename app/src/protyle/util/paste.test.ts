@@ -13,6 +13,8 @@ const source = ts.transpileModule(readFileSync(join(process.cwd(), "src/protyle/
 
 // 粘贴记录只用于导出排查，测试中替换为空实现
 const pasteDebugMock = {recordPaste: () => {}, recordPastePath: () => {}, recordPastePluginReplaced: () => {}};
+// 未设置新输入字号时粘贴内容保持原样
+const inputFontSizeMock = {applyInputFontSizeToBlockDOM: (html: string) => html, applyInputFontSizeToEmptyBlock: () => false};
 
 const createHarness = (disabled = false, richPaste = false) => {
     const uploads: Array<{files: unknown; options: {document: {rootID: string}; insertPosition: unknown}}> = [];
@@ -25,6 +27,7 @@ const createHarness = (disabled = false, richPaste = false) => {
     const restrictedFallback = new Error("restricted fallback");
     const mocks: Record<string, unknown> = {
         "../../aiChat/pasteDebug": pasteDebugMock,
+        "../../claudenotes/inputFontSize": inputFontSizeMock,
         "../../constants": {Constants: {SIYUAN_ASSETS_IMAGE: [".png", ".jpg"]}},
         "../runtimeCapabilities": {
             getProtyleBlockDOMSanitizer: () => (html: string) => html,
@@ -178,6 +181,7 @@ describe("restricted cell selected text paste", () => {
             getAttribute: () => options.code ? "NodeCodeBlock" : "NodeParagraph"};
         const mocks: Record<string, unknown> = {
             "../../aiChat/pasteDebug": pasteDebugMock,
+            "../../claudenotes/inputFontSize": inputFontSizeMock,
             "../../constants": {Constants: {ZWSP: "\u200b"}},
             "../runtimeCapabilities": {
                 getProtyleBlockDOMSanitizer: () => (html: string) => html,

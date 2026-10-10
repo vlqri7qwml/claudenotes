@@ -354,10 +354,11 @@
     --b3-protyle-code-background: rgba(0, 0, 0, .05);
     --claudenotes-code-text: rgb(132, 33, 35);
     --claudenotes-code-border: rgb(208, 207, 204);
-    --claudenotes-code-block: rgba(255, 255, 255, .6);
+    --claudenotes-code-block: #FCFCFA;
+    --claudenotes-code-block-border: #E5E5E5;
 
     /* 所见即所得行内元素颜色 */
-    --b3-protyle-inline-link-color: var(--claudenotes-accent-strong);
+    --b3-protyle-inline-link-color: #3B82F6;
     --b3-protyle-inline-mark-background: #F7DFB5;
 
     /* AI 对话块：提问气泡背景 */

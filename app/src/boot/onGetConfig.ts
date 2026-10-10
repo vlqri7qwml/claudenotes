@@ -1,4 +1,5 @@
 import {adjustLayout, exportLayout, JSONToLayout, resetLayout, resizeTopBar} from "../layout/util";
+import {initInputFontSize} from "../claudenotes/inputFontSize";
 import {resizeTabs, setTabPosition} from "../layout/tabUtil";
 import {initWindowOpenOverride, isMac, isWindows, setStorageVal, updateHotkeyTip} from "../protyle/util/compatibility";
 /// #if !BROWSER
@@ -65,12 +66,17 @@ export const initDesktopHost = async () => {
     } catch (error) {
         console.error("initialize desktop host failed:", error);
     }
+    // ClaudeNotes：主进程确认窗口后才能读取所有工作空间共用的新输入字号
+    initInputFontSize();
     /// #endif
 };
 
 export const onGetConfig = (isStart: boolean, app: App) => {
     correctHotkey(app);
     document.body.classList.toggle("body--windows", isWindows());
+    /// #if BROWSER
+    initInputFontSize();
+    /// #endif
     /// #if !BROWSER
     void initDesktopHost();
     webFrame.setZoomFactor(window.siyuan.storage[Constants.LOCAL_ZOOM]);

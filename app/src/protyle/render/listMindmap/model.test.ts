@@ -3216,7 +3216,8 @@ test("list mindmap mutations preserve block data in the real DOM and Lute", {
         "../../../util/keymapBindings.ts", "../../util/hotKey.ts",
         "../../util/longTextWrap.ts", "../../util/inlineElementBoundary.ts", "../../util/inlineElementMarker.ts",
         "../../util/hasClosest.ts", "../../wysiwyg/getBlock.ts", "../../util/selection.ts",
-        "../../wysiwyg/taskListMarker.ts", "../../wysiwyg/turnIntoList.ts", "../../wysiwyg/input.ts"];
+        "../../wysiwyg/taskListMarker.ts", "../../wysiwyg/turnIntoList.ts",
+        "../../../claudenotes/inputFontSizeCore.ts", "../../../claudenotes/inputFontSize.ts", "../../wysiwyg/input.ts"];
     let inputSource = inputModules.map(file => {
         const filename = path.join(__dirname, file);
         const module = typescript.createSourceFile(file, readFileSync(filename, "utf8"), typescript.ScriptTarget.ES2021, true);

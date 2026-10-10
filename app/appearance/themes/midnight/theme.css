@@ -353,10 +353,11 @@
     --b3-protyle-code-background: rgb(46, 46, 43);
     --claudenotes-code-text: rgb(234, 134, 130);
     --claudenotes-code-border: rgb(56, 55, 52);
-    --claudenotes-code-block: rgba(0, 0, 0, .2);
+    --claudenotes-code-block: #30302E;
+    --claudenotes-code-block-border: #383836;
 
     /* 所见即所得行内元素颜色 */
-    --b3-protyle-inline-link-color: #E08A6C;
+    --b3-protyle-inline-link-color: #60A5FA;
     --b3-protyle-inline-mark-background: #6B5228;
     --b3-protyle-inline-mark-color: #F5E6CC;
 

@@ -23,15 +23,17 @@
 - 提交信息用普通英文句子，不用 gitmoji；末尾附会话要求的署名行
 - petal / 插件 API 同步、`gh` CLI、官方发版流程不适用
 
-## 当前状态（2026-10-09）
+## 当前状态（2026-10-10）
 
 - 已完成：独立身份（ClaudeNotes、端口 6826、`claudenotes://`）、安装目录便携数据、云端服务开关（默认关）、claude.ai 风格内置主题、AI 对话粘贴 / 块菜单 / 导入、Windows 安装包保留数据、三平台发布工作流
 - 粘贴丢格式已查清：claude.ai（含 Claude Code 网页版）**拖选复制时只往剪贴板放纯文本**（用户在 Windows 的 Chrome 上抓到 `types: ["text/plain"]`，样例已按用户要求删除），格式信息本来就不存在；用回答下方的「复制」按钮（得到 Markdown）格式正常。粘贴代码没有问题，不要为这件事改粘贴逻辑
-- 最近一轮已改：
-  - 行内代码红字灰底，配色取自 `.ai` 仓库 `src/index.css` 的 `.inline-code`
-  - 字体回退：正文英文 Source Serif 4（用户说的「Anthropic Serif」指的就是改动前的这个字体），中文微软雅黑（系统字体），界面用系统字体；删除 Figtree
-  - 代码块默认自动换行：`kernel/conf/editor.go`，只影响新建的工作空间
-  - 设置 - 编辑器 - AI 对话 新增「导出最近一次粘贴内容」：`app/src/aiChat/pasteDebug.ts`，在 `paste.ts` 各分支记录走了哪条路径
+- 字体（用户已确认，不要再改）：正文英文 Source Serif 4（用户说的「Anthropic Serif」指的就是这个字体），中文微软雅黑（系统字体），界面用系统字体
+- 行内代码红字灰底，配色取自 `.ai` 仓库 `src/index.css` 的 `.inline-code`
+- 设置 - 编辑器 - AI 对话 有「导出最近一次粘贴内容」：`app/src/aiChat/pasteDebug.ts`，在 `paste.ts` 各分支记录走了哪条路径
+- 最近一轮（2026-10-10）已改：
+  - 代码块换行、正文居中（关闭「自适应宽度」）默认开启；每个工作空间第一次被新版本打开时自动设置一次，标记文件是工作空间 `conf/claudenotes-defaults`，之后以用户设置为准（`kernel/model/claudenotes_defaults.go`、`kernel/conf/editor.go` 的 `ApplyClaudeNotesEditorDefaults`）
+  - 回答排版对齐 `.ai`（`src/components/MarkdownRenderer.tsx`、`src/index.css`）：标题字号与留白、列表紧凑无层级竖线、表格只有横线并铺满、代码块左上角显示语言名、引用块与正文一致、链接蓝色；只在内置主题下生效（`_claudenotes.scss`）。正文字号保持 16px（`.ai` 是 16.5px），由用户自己用字号工具调
+  - 顶栏「新输入字号」（`app/src/claudenotes/`）：之后新起的段落、从外部粘贴的段落和表格写入块属性 `style="font-size: Npx"`；已有文字不变，在旧段落里接着打字跟随旧段落；标题不受影响。设置保存在 `ClaudeNotesData\config\editor-input.json`，所有工作空间共用（`app/electron/inputFontSize.js`，主进程命令 `getInputFontSize` / `setInputFontSize`）
 - 已知问题见下面的「后续目标」
 
 ## 后续目标（按优先级）
@@ -44,6 +46,7 @@
   - `#drag::before` / `::after` 两条细条，默认 8px，左侧栏打开时左条会加宽
   - 页签栏「+」和「∨」之间的空白，由 `app/src/layout/tabUtil.ts` 的 `setTabPosition` 设置；页签多了会缩到接近 0
 - 这套逻辑和思源官方一样。ClaudeNotes 把整条顶栏涂成同一个颜色，看起来整条都是标题栏，用户容易在拖不动的地方拖
+- 2026-10-10 顶栏又多了「新输入字号」按钮（`barInputFontSize`），可拖动区域会再小一点，修拖动时一并考虑
 - 已排除：
   - 描边改法本身
   - Electron 窗口参数（和官方一样）
@@ -65,6 +68,7 @@
 
 | 功能 | 位置 |
 | --- | --- |
+| 新输入字号 | `app/src/claudenotes/`：`inputFontSizeCore.ts`（纯函数，有测试）、`inputFontSize.ts`（读写设置、打字和粘贴时调用）、`inputFontSizeMenu.ts`（顶栏面板）；打字入口 `app/src/protyle/wysiwyg/input.ts` 的 `inputBlock`；顶栏按钮 `app/src/layout/topBar.ts` 的 `barInputFontSize` |
 | AI 对话核心 | `app/src/aiChat/`：`paste.ts`（`getAIChatPasteBlockDOM`）、`parse/{html,text,detect,files}.ts`、`render.ts`、`pasteDebug.ts`（导出最近一次粘贴）、`importer.ts`、`dialog.ts`、`preference.ts`、`types.ts` |
 | AI 对话测试 | `app/src/aiChat/aiChat.test.ts`、`testHelpers.ts`、`fixtures/` |
 | 粘贴入口 | `app/src/protyle/util/paste.ts` |

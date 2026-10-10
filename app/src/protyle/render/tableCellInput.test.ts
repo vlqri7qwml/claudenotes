@@ -27,6 +27,7 @@ const browserCases = async (source: string, queueSource: string, editorSource: s
         normalizeSemanticInlineElements: noop, removeEmptySemanticInlineElement: noop,
         getSemanticMarkerPrefixLengthForNode: () => 0, getTextWithoutSemanticMarkers: (node: Node) => node.textContent,
         turnIntoTaskList: () => false, headingTurnIntoList: () => false, isProtyleListItemFirstParagraph: () => false,
+        applyInputFontSizeOnFirstInput: () => false,
         mathRender: noop, hideElements: noop, scrollCenter: noop, focusByRange,
         transaction: (_owner: IProtyle, doOperations: IOperation[], undoOperations: IOperation[]) => {
             changes.push({doOperations, undoOperations});

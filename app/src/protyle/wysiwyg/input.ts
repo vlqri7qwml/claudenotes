@@ -1,4 +1,5 @@
 import {focusBlock, focusByOffset, focusByWbr, getEditorRange, getSelectionOffset} from "../util/selection";
+import {applyInputFontSizeOnFirstInput} from "../../claudenotes/inputFontSize";
 import {Constants} from "../../constants";
 import * as dayjs from "dayjs";
 import {transaction, turnsOneInto, updateTransaction, wrapBlockInBlockquote} from "./transaction";
@@ -165,6 +166,8 @@ const inputBlock = async (protyle: IProtyle, blockElement: HTMLElement, range: R
         focusByWbr(blockElement, range);
         return;
     }
+    // ClaudeNotes：空段落第一次输入时使用新输入字号，撤销时随原内容一起恢复
+    applyInputFontSizeOnFirstInput(blockElement, protyle.wysiwyg.lastHTMLs[blockElement.getAttribute("data-node-id")]);
     blockElement.setAttribute("updated", dayjs().format("YYYYMMDDHHmmss"));
     const wbrElement: HTMLElement = document.createElement("wbr");
     range.insertNode(wbrElement);

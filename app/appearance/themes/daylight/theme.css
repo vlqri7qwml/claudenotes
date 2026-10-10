@@ -357,6 +357,11 @@
     --claudenotes-code-block: #FCFCFA;
     --claudenotes-code-block-border: #E5E5E5;
 
+    /* 表格：与 claude.ai 一致，圆角细框、浅灰表头、浅色横线 */
+    --claudenotes-table-border: #E3E3E2;
+    --claudenotes-table-header: #F0F0EF;
+    --claudenotes-table-header-line: #D8D8D8;
+
     /* 所见即所得行内元素颜色 */
     --b3-protyle-inline-link-color: #3B82F6;
     --b3-protyle-inline-mark-background: #F7DFB5;

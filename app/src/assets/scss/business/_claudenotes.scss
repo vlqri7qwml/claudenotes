@@ -215,32 +215,86 @@ html[data-theme-mode="dark"][data-dark-theme="midnight"] {
     }
   }
 
-  // 表格：铺满宽度，只有横线，表头无底色
+  // 表格：按 claude.ai 官方网页（.ai 这里与官方不同）——圆角细框、浅灰表头（常规字重）、只有横线、按单词换行
   .protyle-wysiwyg [data-node-id].table {
     font-size: .88em;
 
     table {
+      --b3-table-border-radius-top-left: 8px;
+      --b3-table-border-radius-top-right: 8px;
+      --b3-table-border-radius-bottom-right: 8px;
+      --b3-table-border-radius-bottom-left: 8px;
       width: 100%;
-      border: 0;
-      border-radius: 0;
+      border: 1px solid var(--claudenotes-table-border);
+      line-height: 1.5;
     }
 
     th,
     td {
-      padding: 8px 16px 8px 0;
-      border-right: 0;
-      border-bottom: 1px solid var(--b3-theme-on-background);
-      border-radius: 0;
+      // 角上单元格的圆角 = 外框 8px 减去 1px 边框，表头底色正好贴住外框内沿
+      --b3-table-border-radius-top-left: 7px;
+      --b3-table-border-radius-top-right: 7px;
+      --b3-table-border-radius-bottom-right: 7px;
+      --b3-table-border-radius-bottom-left: 7px;
+      padding: 7px 12px;
+      border: 0;
       background-color: transparent;
-    }
-
-    tbody td {
       font-weight: inherit;
+      // <table spellcheck> 带有 word-break: break-word，单元格继承后单词会被拆开（Electro / n）
+      word-break: normal;
+      overflow-wrap: break-word;
     }
 
-    tbody:last-of-type > tr:last-child > * {
+    // 横线画在行的上边：最后一行不与外框叠成双线，向下合并到最后一行的单元格也一样
+    thead > tr > * {
+      border-bottom: 1px solid var(--claudenotes-table-border);
+    }
+
+    tbody > tr + tr > * {
+      border-top: 1px solid var(--claudenotes-table-border);
+    }
+
+    &:not([custom-sy-table-header-row="false"]) thead > tr > * {
+      border-bottom-color: var(--claudenotes-table-header-line);
+    }
+
+    &:not([custom-sy-table-header-row="false"]) thead > tr > *,
+    &[custom-sy-table-header-column="true"] tr:not([aria-hidden]) > :first-child {
+      background-color: var(--claudenotes-table-header);
+    }
+
+    // 只有表头一行（没有 tbody）
+    thead:last-child > tr > * {
       border-bottom: 0;
     }
+
+    // 行内代码、多段落单元格及其编辑框同样只在正常位置换行（代码块除外）
+    :is(th, td) :is(span[data-type~="code"], [spellcheck], [data-table-cell-content]):not(.hljs *) {
+      word-break: normal;
+      overflow-wrap: break-word;
+    }
+
+    // 拖选单元格的高亮，四角跟随外框内沿的圆角
+    .table__select {
+      --b3-border-radius-s: 7px;
+    }
+
+    // 固定表头：去掉底部内阴影（会与外框叠成双线），四角补画用同样的圆角和颜色
+    &[custom-pinthead="true"] {
+      table,
+      thead {
+        box-shadow: none;
+      }
+
+      .protyle-action__table::before {
+        --b3-table-frame-radius: 7px;
+        --b3-theme-surface-lighter: var(--claudenotes-table-border);
+      }
+    }
+  }
+
+  .protyle-table-control__selection {
+    --b3-border-radius-s: 7px;
   }
 
   // 代码块：左上角一直显示语言名

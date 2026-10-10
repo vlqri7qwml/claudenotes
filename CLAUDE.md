@@ -32,34 +32,16 @@
 - 设置 - 编辑器 - AI 对话 有「导出最近一次粘贴内容」：`app/src/aiChat/pasteDebug.ts`，在 `paste.ts` 各分支记录走了哪条路径
 - 最近一轮（2026-10-10）已改：
   - 代码块换行、正文居中（关闭「自适应宽度」）默认开启；每个工作空间第一次被新版本打开时自动设置一次，标记文件是工作空间 `conf/claudenotes-defaults`，之后以用户设置为准（`kernel/model/claudenotes_defaults.go`、`kernel/conf/editor.go` 的 `ApplyClaudeNotesEditorDefaults`）
-  - 回答排版对齐 `.ai`（`src/components/MarkdownRenderer.tsx`、`src/index.css`）：标题字号与留白、列表紧凑无层级竖线、表格只有横线并铺满、代码块左上角显示语言名、引用块与正文一致、链接蓝色；只在内置主题下生效（`_claudenotes.scss`）。正文字号保持 16px（`.ai` 是 16.5px），由用户自己用字号工具调
+  - 回答排版对齐 `.ai`（`src/components/MarkdownRenderer.tsx`、`src/index.css`）：标题字号与留白、列表紧凑无层级竖线、代码块左上角显示语言名、引用块与正文一致、链接蓝色；只在内置主题下生效（`_claudenotes.scss`）。正文字号保持 16px（`.ai` 是 16.5px），由用户自己用字号工具调
+  - 表格按 claude.ai 官方网页（用户截图实测，`.ai` 的表格与官方不同）：圆角 8px 细框、浅灰表头（常规字重）、行间浅色横线、无竖线、单词不从中间拆开；颜色变量 `--claudenotes-table-*`。同时处理了只有表头、表头列、固定表头、拖选高亮的圆角
   - 顶栏「新输入字号」（`app/src/claudenotes/`）：之后新起的段落、从外部粘贴的段落和表格写入块属性 `style="font-size: Npx"`；已有文字不变，在旧段落里接着打字跟随旧段落；标题不受影响。设置保存在 `ClaudeNotesData\config\editor-input.json`，所有工作空间共用（`app/electron/inputFontSize.js`，主进程命令 `getInputFontSize` / `setInputFontSize`）
+- 窗口拖动：用户确认在之前的版本已经能拖动，已解决
 - 已知问题见下面的「后续目标」
 
 ## 后续目标（按优先级）
 
-### 1. 窗口拖不动（最优先）
-
-用户反馈（Windows）：构建已包含 `5fa3e90`（边框改描边），窗口仍然拖不动。只读排查的结论：
-
-- 默认开启「页签融合至顶栏」（`HideToolbar: true`），这时能拖动的只有三小块：
-  - `#drag::before` / `::after` 两条细条，默认 8px，左侧栏打开时左条会加宽
-  - 页签栏「+」和「∨」之间的空白，由 `app/src/layout/tabUtil.ts` 的 `setTabPosition` 设置；页签多了会缩到接近 0
-- 这套逻辑和思源官方一样。ClaudeNotes 把整条顶栏涂成同一个颜色，看起来整条都是标题栏，用户容易在拖不动的地方拖
-- 2026-10-10 顶栏又多了「新输入字号」按钮（`barInputFontSize`），可拖动区域会再小一点，修拖动时一并考虑
-- 已排除：
-  - 描边改法本身
-  - Electron 窗口参数（和官方一样）
-  - `style.WebkitAppRegion` 写法（在 Chromium 141 里实测有效）
-- 注意：新版 Chromium 把 `-webkit-app-region: none` 计算成 `no-drag`
-- 下一步：等用户在 Windows 开发者工具的控制台跑诊断代码（红色是可拖动区域，蓝色是不可拖动区域），上传 `drag.json` 和截图，并说明在红色区域能不能拖：
-  - 能拖：把页签栏的整块空白设成可拖动，页签、按钮和弹出层设成 `no-drag`
-  - 也拖不动：查全屏状态、Windows 缩放等窗口层面的原因
-
-### 2. 其他待办
-
 - 「误认成对话」：没有站点标记时，程序会在纯文本里找「问：答：user: assistant:」这类标签，普通回答也可能被当成对话（容器里复现过 3 例）。用户这一轮选择暂时不修
-- 发布工作流 `.github/workflows/claudenotes.yml` 还没真正跑过，修完拖动后手动运行一次，让用户拿到新安装包
+- 发布工作流 `.github/workflows/claudenotes.yml` 还没真正跑过，等用户需要新安装包时手动运行一次
 - `.ai` 仓库的旧分支 `claude/affectionate-albattani-iuwc6w` 等用户确认后再删
 - Windows 安装包未签名，首次运行会出现 SmartScreen 提示
 - 插件时代留下的 `custom-chat-role` 属性没有样式（现在用 `custom-sy-chat-role`）
@@ -127,5 +109,6 @@ node --import tsx --test --test-concurrency=1 src/aiChat/aiChat.test.ts electron
 `vlqri7qwml/.ai`（私有，需在会话中单独挂载）只在需要参考**仿 claude.ai 页面**时查看：
 
 - 除 `siyuan-master/` 以外的代码都是仿 claude.ai 的前端页面，可以参考配色、布局和组件样式
+- `.ai` 和 claude.ai 官方网页不一致时，以用户发来的官方截图为准，不要只照抄 `.ai`。已知不一致：表格（`.ai` 是黑色横线、无底色、无圆角，官方是圆角细框加浅灰表头）
 - `help.txt`、`matches.txt`、`refactor.js`、`refactor.cjs`、`noop.cjs` 是零散遗留文件，不用看
 - **`.ai/siyuan-master/` 和 `.ai` 的开发分支 `claude/affectionate-albattani-iuwc6w` 都是旧版本**，ClaudeNotes 的源码一律以本仓库为准，不要从那里拷代码回来

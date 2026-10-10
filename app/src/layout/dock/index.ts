@@ -32,6 +32,7 @@ import {getDockHotkey} from "./hotkey";
 import {resolveDockPanelVisibility} from "./panelVisibility";
 import {syncDockEntryOrders} from "../../config/entryVisibility/runtime";
 import {isWindow} from "../../util/functions";
+import {getWindowFrameSize} from "../getTopBarHeight";
 
 const TYPES = ["file", "outline", "inbox", "bookmark", "tag", "graph", "globalGraph", "backlink", "agentChat"];
 const DEFAULT_DOCK_SIZE = 232;
@@ -253,13 +254,15 @@ export class Dock {
                 event.toElement?.classList.contains("tooltip")) {
                 return;
             }
-            if (this.position === "Left" && event.clientX < 43) {
+            // ClaudeNotes：窗口外围有可拖动留白时，停靠栏整体向内移了留白的宽度
+            const frame = getWindowFrameSize();
+            if (this.position === "Left" && event.clientX < frame + 43) {
                 return;
             }
-            if (this.position === "Right" && event.clientX > window.innerWidth - 43) {
+            if (this.position === "Right" && event.clientX > window.innerWidth - frame - 43) {
                 return;
             }
-            if (this.position === "Bottom" && event.clientY > window.innerHeight - 73) {
+            if (this.position === "Bottom" && event.clientY > window.innerHeight - frame - 73) {
                 return;
             }
             this.hideDockByHover();

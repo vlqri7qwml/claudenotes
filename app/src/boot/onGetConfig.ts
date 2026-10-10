@@ -11,6 +11,7 @@ import * as fs from "fs";
 import * as path from "path";
 import {afterExport} from "../protyle/export/util";
 import {onWindowsMsg} from "../window/onWindowsMsg";
+import {initWindowFrame} from "../claudenotes/windowFrame";
 /// #endif
 import {Constants} from "../constants";
 import {appearanceConfigApi} from "../config/tabs/appearanceRuntime";
@@ -78,6 +79,8 @@ export const onGetConfig = (isStart: boolean, app: App) => {
     initInputFontSize();
     /// #endif
     /// #if !BROWSER
+    // 窗口外围的可拖动留白要在第一次布局之前加上，页签栏是否融合到顶栏按留白后的位置判断
+    initWindowFrame();
     void initDesktopHost();
     webFrame.setZoomFactor(window.siyuan.storage[Constants.LOCAL_ZOOM]);
     const position = Constants.SIZE_ZOOM.find((item) => item.zoom === window.siyuan.storage[Constants.LOCAL_ZOOM]).position;

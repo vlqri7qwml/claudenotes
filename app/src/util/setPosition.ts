@@ -1,21 +1,25 @@
-import {getTopBarHeight} from "../layout/getTopBarHeight";
+import {getTopBarHeight, getWindowFrameSize} from "../layout/getTopBarHeight";
 
 export const setPosition = (element: HTMLElement, left: number, top: number, targetHeight = 0, targetLeft = 0, sticky = false) => {
     element.style.top = top + "px";
     element.style.left = left + "px";
     const rect = element.getBoundingClientRect();
     const topBarHeight = getTopBarHeight();
+    // ClaudeNotes：窗口外围有可拖动留白时，弹出层停在留白里侧
+    const frame = getWindowFrameSize();
+    const viewWidth = window.innerWidth - frame;
+    const viewHeight = window.innerHeight - frame;
     if (rect.top < topBarHeight) {
         // 如果元素接触顶栏，向下移
         element.style.top = topBarHeight + "px";
-    } else if (rect.bottom > window.innerHeight) {
+    } else if (rect.bottom > viewHeight) {
         const y = top - rect.height - targetHeight;
-        if (y > topBarHeight && (y + rect.height) < window.innerHeight) {
+        if (y > topBarHeight && (y + rect.height) < viewHeight) {
             // 如果元素底部超出窗口（下方空间不够），向上移
             element.style.top = y + "px";
         } else {
             // 如果上下空间都不够，向上移，但尽量靠底部
-            element.style.top = Math.max(topBarHeight, window.innerHeight - rect.height) + "px";
+            element.style.top = Math.max(topBarHeight, viewHeight - rect.height) + "px";
         }
     }
 
@@ -28,7 +32,7 @@ export const setPosition = (element: HTMLElement, left: number, top: number, tar
         const lockedX = element.dataset.positionX;
         const sameAnchor = element.dataset.positionTop === String(top);
         if (sameAnchor && lockedBottom !== undefined) {
-            if (top + rect.height <= window.innerHeight) {
+            if (top + rect.height <= viewHeight) {
                 // 下方放得下：向下展开，回到首次锚点
                 element.style.top = top + "px";
             } else {
@@ -43,10 +47,10 @@ export const setPosition = (element: HTMLElement, left: number, top: number, tar
 
         // 水平溢出修正（仅在未锁定时做）
         if (!(sameAnchor && lockedX !== undefined)) {
-            if (rect.right > window.innerWidth) {
-                element.style.left = window.innerWidth - rect.width - targetLeft + "px";
-            } else if (rect.left < 0) {
-                element.style.left = "0";
+            if (rect.right > viewWidth) {
+                element.style.left = viewWidth - rect.width - targetLeft + "px";
+            } else if (rect.left < frame) {
+                element.style.left = frame + "px";
             }
         }
 
@@ -55,12 +59,12 @@ export const setPosition = (element: HTMLElement, left: number, top: number, tar
         element.dataset.positionBottom = String(actualRect.bottom);
         element.dataset.positionX = String(parseFloat(element.style.left));
     } else {
-        if (rect.right > window.innerWidth) {
+        if (rect.right > viewWidth) {
             // 展现在左侧
-            element.style.left = window.innerWidth - rect.width - targetLeft + "px";
-        } else if (rect.left < 0) {
+            element.style.left = viewWidth - rect.width - targetLeft + "px";
+        } else if (rect.left < frame) {
             // 依旧展现在左侧，只是位置右移
-            element.style.left = "0";
+            element.style.left = frame + "px";
         }
     }
 };

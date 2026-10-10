@@ -27,6 +27,7 @@ import {isWindow} from "../util/functions";
 import {Wnd} from "./Wnd";
 import {requestResponsiveDockLayout} from "./dock/responsive";
 import {cloneSearchConfig} from "../search/config";
+import {getWindowFrameSize} from "./getTopBarHeight";
 
 export const setTabPosition = (onlyPadding = false, onlyClear = false) => {
     const isWindowMode = isWindow();
@@ -47,6 +48,8 @@ export const setTabPosition = (onlyPadding = false, onlyClear = false) => {
     const centerRect = (isWindowMode ? window.siyuan.layout.layout : window.siyuan.layout.centerLayout).element.getBoundingClientRect();
     const toolbarDragElement = document.getElementById("drag");
     const toolbarDragRect = toolbarDragElement?.getBoundingClientRect() || {left: 0, right: 0};
+    // ClaudeNotes：窗口外围有可拖动留白时，最上面一排页签栏的 top 等于留白宽度
+    const topEdge = getWindowFrameSize();
     if (toolbarDragElement) {
         toolbarDragElement.style.setProperty("--b3-toolbar-drag-left", "8px");
         toolbarDragElement.style.setProperty("--b3-toolbar-drag-right", "8px");
@@ -61,7 +64,7 @@ export const setTabPosition = (onlyPadding = false, onlyClear = false) => {
         headerElement.style.paddingLeft = "";
         (headerElement.lastElementChild as HTMLElement).style.marginRight = "";
         headerElement.style.visibility = "";
-        if (headerRect.top <= 0) {
+        if (headerRect.top <= topEdge) {
             // header padding
             if (isWindowMode) {
                 if (headerRect.left === 0) {
@@ -100,7 +103,7 @@ export const setTabPosition = (onlyPadding = false, onlyClear = false) => {
         item.element.classList.remove("layout__wnd--right", "layout__wnd--left", "layout__wnd--center");
         (item.element.querySelector(".layout-tab-container") as HTMLElement).style.backgroundColor = "";
         const dragElement = headerElement.querySelector(".item--readonly .fn__flex-1") as HTMLElement;
-        if (headerRect.top <= 0) {
+        if (headerRect.top <= topEdge) {
             // header transparent
             item.element.classList.add("layout__wnd--center");
             if (!isWindowMode) {

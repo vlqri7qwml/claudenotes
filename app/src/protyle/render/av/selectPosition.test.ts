@@ -13,7 +13,7 @@ test("select menus retain their anchor after a field is replaced and still avoid
     }).outputText;
     runInNewContext(compile(join(__dirname, "../../../util/setPosition.ts")), {
         exports: positionExports,
-        require: () => ({getTopBarHeight: () => 30}),
+        require: () => ({getTopBarHeight: () => 30, getWindowFrameSize: () => 0}),
         window: viewport,
     });
     const exports = {} as typeof import("./selectPosition");

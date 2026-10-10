@@ -10,6 +10,7 @@ import {resize} from "../util/resize";
 import {disabledProtyle, enableProtyle} from "../util/onGet";
 import {isWindow} from "../../util/functions";
 import {Wnd} from "../../layout/Wnd";
+import {getWindowFrameSize} from "../../layout/getTopBarHeight";
 
 export const net2LocalAssets = (protyle: IProtyle, type: "Assets" | "Img") => {
     if (protyle.element.querySelector(".wysiwygLoading")) {
@@ -47,7 +48,7 @@ export const setFullscreen = (element: Element, enter: boolean, btnElement?: Ele
     }
     wndsTemp.find(item => {
         const headerElement = item.headersElement.parentElement;
-        if (headerElement.getBoundingClientRect().top <= 0) {
+        if (headerElement.getBoundingClientRect().top <= getWindowFrameSize()) {
             ((headerElement.querySelector(".item--readonly .fn__flex-1") as HTMLElement).style as CSSStyleDeclarationElectron).WebkitAppRegion =
                 enter ? "" : "drag";
             return true;

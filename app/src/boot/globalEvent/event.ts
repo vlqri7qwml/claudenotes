@@ -13,6 +13,7 @@ import {clearTabHoverSwitch} from "../../layout/tabDrag";
 import {setWebViewFocusable} from "../../mobile/util/mobileAppUtil";
 import {cancelManualTouch, initTouchDragBridge, isLastPointerMouse} from "../../util/touchDragBridge";
 import {isWindow} from "../../util/functions";
+import {getWindowFrameSize} from "../../layout/getTopBarHeight";
 import {getDockByType} from "../../layout/tabUtil";
 import {fetchPost} from "../../util/fetch";
 import {initHarmonyTextSelectionMenu} from "../../util/harmonyTextSelectionMenu";
@@ -139,20 +140,24 @@ export const initWindowEvent = (app: App) => {
                     }
                 }
                 if (isDocumentTab || ["nodeheading", "nodelistitem"].includes(gutterBlockType)) {
+                    // ClaudeNotes：窗口外围有可拖动留白时，停靠栏和状态栏都向内移了留白的宽度
+                    const frame = getWindowFrameSize();
+                    const viewWidth = window.innerWidth - frame;
+                    const viewHeight = window.innerHeight - frame;
                     const statusHeight = document.getElementById("status")?.clientHeight || 0;
-                    const toolbarHeight = document.getElementById("toolbar")?.clientHeight || 0;
-                    const inYRange = event.clientY > toolbarHeight && event.clientY < window.innerHeight - statusHeight;
+                    const toolbarHeight = frame + (document.getElementById("toolbar")?.clientHeight || 0);
+                    const inYRange = event.clientY > toolbarHeight && event.clientY < viewHeight - statusHeight;
                     // 通过 dock 容器类名判断位置，避免访问私有属性 position
                     const dockElement = fileDock.layout.element;
                     let onEdge = false;
                     if (dockElement.classList.contains("layout__dockl")) {
                         onEdge = inYRange &&
-                            (fileDock.elements[0].clientWidth > 0 ? event.clientX < Math.max((document.getElementById("dockLeft")?.clientWidth || 0) + 1, 16) : event.clientX < 8);
+                            (fileDock.elements[0].clientWidth > 0 ? event.clientX < frame + Math.max((document.getElementById("dockLeft")?.clientWidth || 0) + 1, 16) : event.clientX < frame + 8);
                     } else if (dockElement.classList.contains("layout__dockr")) {
                         onEdge = inYRange &&
-                            (fileDock.elements[0].clientWidth > 0 ? event.clientX > window.innerWidth - Math.max((document.getElementById("dockRight")?.clientWidth || 0) - 2, 16) : event.clientX > window.innerWidth - 8);
+                            (fileDock.elements[0].clientWidth > 0 ? event.clientX > viewWidth - Math.max((document.getElementById("dockRight")?.clientWidth || 0) - 2, 16) : event.clientX > viewWidth - 8);
                     } else if (dockElement.classList.contains("layout__dockb")) {
-                        onEdge = event.clientY > Math.min(window.innerHeight - 10, window.innerHeight - statusHeight);
+                        onEdge = event.clientY > Math.min(viewHeight - 10, viewHeight - statusHeight);
                     }
                     const rect = dockElement.getBoundingClientRect();
                     if (onEdge ||

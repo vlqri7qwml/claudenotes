@@ -6,6 +6,7 @@ import {getAllEditor} from "../layout/getAll";
 import {ipcRenderer} from "electron";
 import {Constants} from "../constants";
 import {flushWindowWorkspace} from "./workspace";
+import {getWindowFrameSize} from "../layout/getTopBarHeight";
 
 const closeTab = (ipcData: IWebSocketData) => {
     const tab = getInstanceById(ipcData.data);
@@ -41,7 +42,7 @@ export const onWindowsMsg = (ipcData: IWebSocketData) => {
                 window.siyuan.dragTab = undefined;
             } else {
                 document.querySelectorAll(".layout-tab-bar--readonly .fn__flex-1").forEach((item: HTMLElement) => {
-                    if (item.getBoundingClientRect().top <= 6) {
+                    if (item.getBoundingClientRect().top <= getWindowFrameSize() + 6) {
                         if (ipcData.data === "addRegionStyle") {
                             (item.style as CSSStyleDeclarationElectron).WebkitAppRegion = "drag";
                         } else if (ipcData.data === "removeRegionStyle") {

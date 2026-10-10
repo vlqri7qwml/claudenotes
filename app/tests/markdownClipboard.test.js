@@ -103,6 +103,9 @@ const runCases = async source => {
         const mocks = {
             "../../constants": {Constants: {ZWSP: "\u200b"}},
             "../../aiChat/paste": {getAIChatPasteBlockDOM: () => ""},
+            "../../aiChat/pasteDebug": {recordPaste: noop, recordPastePath: noop, recordPastePluginReplaced: noop},
+            "../../claudenotes/inputFontSize": {applyInputFontSizeToBlockDOM: value => value,
+                applyInputFontSizeToEmptyBlock: () => false},
             "./markdownClipboard": clipboard,
             "../runtimeCapabilities": {
                 getProtyleBlockDOMSanitizer: () => restricted ? value => value : undefined,

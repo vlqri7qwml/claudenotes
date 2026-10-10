@@ -27,12 +27,21 @@ html.claudenotes-frame > body {
     --claudenotes-frame-resize: 0px;
   }
 
-  &.body--fullscreen {
-    --claudenotes-frame: 0px;
-
+  // 全屏，或打开图片查看器（铺满整个窗口）时去掉留白
+  &.body--fullscreen,
+  &:has(> .viewer-container) {
     & > .claudenotes-frame__edge {
       display: none;
     }
+  }
+
+  &.body--fullscreen {
+    --claudenotes-frame: 0px;
+  }
+
+  // 打开对话框时，留白和对话框背后的界面一起变暗，仍然可以拖动
+  &:has(> .b3-dialog--open) > .claudenotes-frame__edge {
+    box-shadow: inset 0 0 0 var(--claudenotes-frame) var(--b3-mask-background);
   }
 
   // 页签融合至顶栏时，顶栏按整个窗口定位，左右各让出留白
@@ -70,7 +79,10 @@ html.claudenotes-frame > body {
   & > .claudenotes-frame__edge {
     position: fixed;
     z-index: 999998;
-    background-color: var(--b3-body-background);
+    // 与 body 相同的背景（含左上角的淡淡光晕），按整个窗口定位，和 body 连成一片
+    background-color: inherit;
+    background-image: inherit;
+    background-attachment: fixed;
 
     &::before {
       content: "";

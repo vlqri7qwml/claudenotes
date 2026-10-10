@@ -7,7 +7,7 @@ import {getVisibleSheetViewport, waitForSheetViewport} from "./sheetOpen";
 import {hasClosestByClassName} from "../protyle/util/hasClosest";
 import {isMobile} from "../util/functions";
 import {Constants} from "../constants";
-import {getTopBarHeight} from "../layout/getTopBarHeight";
+import {getTopBarHeight, getWindowFrameSize} from "../layout/getTopBarHeight";
 import {electronUndo} from "../protyle/undo";
 import {escapeAttr} from "../util/escape";
 import {setMenuInputCurrent} from "./menuKeyboard";
@@ -403,17 +403,21 @@ export class Menu {
         }
         const itemRect = subMenuElement.parentElement.getBoundingClientRect();
         const subMenuRect = subMenuElement.getBoundingClientRect();
+        // ClaudeNotes：窗口外围有可拖动留白时，子菜单停在留白里侧
+        const frame = getWindowFrameSize();
+        const viewWidth = window.innerWidth - frame;
+        const viewHeight = window.innerHeight - frame;
         if (subMenuElement.dataset.anchor === "action" && !this.element.classList.contains("b3-menu--fullscreen")) {
             const actionElement = subMenuElement.parentElement.querySelector(":scope > .b3-menu__action") as HTMLElement;
             if (actionElement) {
                 const actionRect = actionElement.getBoundingClientRect();
-                if (actionRect.right + subMenuRect.width <= window.innerWidth) {
+                if (actionRect.right + subMenuRect.width <= viewWidth) {
                     subMenuElement.style.left = `${actionRect.right}px`;
-                    subMenuElement.style.top = `${Math.max(getTopBarHeight(), Math.min(actionRect.top - 9, window.innerHeight - subMenuRect.height - 1))}px`;
+                    subMenuElement.style.top = `${Math.max(getTopBarHeight(), Math.min(actionRect.top - 9, viewHeight - subMenuRect.height - 1))}px`;
                 } else {
-                    subMenuElement.style.left = `${Math.max(0, Math.min(actionRect.right - subMenuRect.width, window.innerWidth - subMenuRect.width))}px`;
+                    subMenuElement.style.left = `${Math.max(frame, Math.min(actionRect.right - subMenuRect.width, viewWidth - subMenuRect.width))}px`;
                     const below = actionRect.bottom;
-                    subMenuElement.style.top = `${below + subMenuRect.height <= window.innerHeight ? below : Math.max(getTopBarHeight(), actionRect.top - subMenuRect.height)}px`;
+                    subMenuElement.style.top = `${below + subMenuRect.height <= viewHeight ? below : Math.max(getTopBarHeight(), actionRect.top - subMenuRect.height)}px`;
                 }
                 return;
             }
@@ -423,7 +427,7 @@ export class Menu {
         // 减 9px 是为了尽量对齐菜单选项（b3-menu__submenu 的默认 padding-top 加上子菜单首个 b3-menu__item 的默认 margin-top）
         // 减 1px 是为了避免在特定情况下渲染出不应存在的滚动条而做的兼容处理
         subMenuElement.style.top = Math.max(getTopBarHeight(),
-            Math.min(itemRect.top - 9, window.innerHeight - subMenuRect.height - 1)) + "px";
+            Math.min(itemRect.top - 9, viewHeight - subMenuRect.height - 1)) + "px";
 
         // 水平方向位置调整
         // 多级菜单继承上一级子菜单的方向
@@ -434,15 +438,15 @@ export class Menu {
         }
 
         // 8px 是 b3-menu__items 的默认 padding-right
-        const spaceRight = window.innerWidth - itemRect.right - 8;
-        const spaceLeft = itemRect.left - 8;
+        const spaceRight = viewWidth - itemRect.right - 8;
+        const spaceLeft = itemRect.left - frame - 8;
         if (isParentDirectionLeft) {
             if (spaceLeft >= subMenuRect.width) {
                 subMenuElement.style.left = (itemRect.left - 8 - subMenuRect.width) + "px";
             } else if (spaceRight >= subMenuRect.width) {
                 subMenuElement.style.left = (itemRect.right + 8) + "px";
             } else {
-                subMenuElement.style.left = Math.max(0, window.innerWidth - subMenuRect.width) + "px";
+                subMenuElement.style.left = Math.max(frame, viewWidth - subMenuRect.width) + "px";
             }
         } else {
             if (spaceRight >= subMenuRect.width) {
@@ -450,7 +454,7 @@ export class Menu {
             } else if (spaceLeft >= subMenuRect.width) {
                 subMenuElement.style.left = (itemRect.left - 8 - subMenuRect.width) + "px";
             } else {
-                subMenuElement.style.left = Math.max(0, window.innerWidth - subMenuRect.width) + "px";
+                subMenuElement.style.left = Math.max(frame, viewWidth - subMenuRect.width) + "px";
             }
         }
 
@@ -459,7 +463,7 @@ export class Menu {
 
     private updateMaxHeight(menuElement: HTMLElement, itemsMenuElement: HTMLElement) {
         // 加 1px 是为了避免在特定情况下渲染出不应存在的滚动条而做的兼容处理; 18 为父子块高差
-        itemsMenuElement.style.maxHeight = Math.max(window.innerHeight - menuElement.getBoundingClientRect().top - 18 + 1, 30) + "px";
+        itemsMenuElement.style.maxHeight = Math.max(window.innerHeight - getWindowFrameSize() - menuElement.getBoundingClientRect().top - 18 + 1, 30) + "px";
     }
 
     private preventDefault(event: Event) {
@@ -602,7 +606,7 @@ export class Menu {
             itemsElement.style.maxHeight = "";
             const menuHeight = this.element.getBoundingClientRect().height;
             const position = getAnchoredMenuPosition(options.y, options.h, menuHeight,
-                window.innerHeight, getTopBarHeight());
+                window.innerHeight - getWindowFrameSize(), getTopBarHeight());
             const chromeHeight = menuHeight - itemsElement.getBoundingClientRect().height;
             itemsElement.style.maxHeight = Math.max(0, position.height - chromeHeight) + "px";
             setPosition(this.element, options.x - (options.isLeft ? this.element.clientWidth : 0),

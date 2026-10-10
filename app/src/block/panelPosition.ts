@@ -1,4 +1,4 @@
-import {getTopBarHeight} from "../layout/getTopBarHeight";
+import {getTopBarHeight, getWindowFrameSize} from "../layout/getTopBarHeight";
 import {setPosition} from "../util/setPosition";
 
 export const positionBlockPanel = (element: HTMLElement, targetRect: DOMRect) => {
@@ -7,7 +7,8 @@ export const positionBlockPanel = (element: HTMLElement, targetRect: DOMRect) =>
     element.style.minHeight = "";
     const height = element.getBoundingClientRect().height;
     const above = Math.max(0, targetRect.top - getTopBarHeight() - 8);
-    const below = Math.max(0, window.innerHeight - targetRect.bottom - 12);
+    // 窗口外围有可拖动留白时，底边和拖拽把手停在留白上方
+    const below = Math.max(0, window.innerHeight - getWindowFrameSize() - targetRect.bottom - 12);
     const openAbove = height > below && above > below;
     const availableHeight = Math.floor(openAbove ? Math.min(height, above) : below);
     const style = getComputedStyle(element);

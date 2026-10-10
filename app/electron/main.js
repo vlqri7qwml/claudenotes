@@ -718,7 +718,8 @@ const bindTopBarContextMenu = (win) => {
         const x = (dipPoint.x - bounds.x) / zoom;
         const y = (dipPoint.y - bounds.y) / zoom;
         // 顶栏高度 32px，融合顶栏 42px，加上顶部留白；超出范围（含左、右、下三条留白）保留系统菜单
-        if (y < 0 || y > 42 + CLAUDENOTES_FRAME) {
+        if (y < 0 || y > 42 + CLAUDENOTES_FRAME ||
+            x < CLAUDENOTES_FRAME || x > bounds.width / zoom - CLAUDENOTES_FRAME) {
             return;
         }
         event.preventDefault();

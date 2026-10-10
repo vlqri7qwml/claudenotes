@@ -35,7 +35,7 @@
   - 回答排版对齐 `.ai`（`src/components/MarkdownRenderer.tsx`、`src/index.css`）：标题字号与留白、列表紧凑无层级竖线、代码块左上角显示语言名、引用块与正文一致、链接蓝色；只在内置主题下生效（`_claudenotes.scss`）。正文字号保持 16px（`.ai` 是 16.5px），由用户自己用字号工具调
   - 表格按 claude.ai 官方网页（用户截图实测，`.ai` 的表格与官方不同）：圆角 8px 细框、浅灰表头（常规字重）、行间浅色横线、无竖线、单词不从中间拆开；颜色变量 `--claudenotes-table-*`。同时处理了只有表头、表头列、固定表头、拖选高亮的圆角
   - 顶栏「新输入字号」（`app/src/claudenotes/`）：之后新起的段落、从外部粘贴的段落和表格写入块属性 `style="font-size: Npx"`；已有文字不变，在旧段落里接着打字跟随旧段落；标题不受影响。设置保存在 `ClaudeNotesData\config\editor-input.json`，所有工作空间共用（`app/electron/inputFontSize.js`，主进程命令 `getInputFontSize` / `setInputFontSize`）
-- 窗口拖动：Windows 主窗口外围加了一圈 10px 可拖动留白（`app/src/claudenotes/windowFrame.ts`，样式在 `_claudenotes.scss` 的 `html.claudenotes-frame`），页签再多也能拖；最大化保留、全屏去掉；分屏窗口没有留白。宽度在三处保持一致：`layout/getTopBarHeight.ts` 的 `WINDOW_FRAME_SIZE`、`--claudenotes-frame`、`electron/main.js` 的 `CLAUDENOTES_FRAME`。依赖窗口边缘位置的代码都用 `getWindowFrameSize()` 加上留白（页签栏是否在最顶上、侧栏浮动面板、弹出层定位）
+- 窗口拖动：Windows 主窗口外围加了一圈 10px 可拖动留白（`app/src/claudenotes/windowFrame.ts`，样式在 `_claudenotes.scss` 的 `html.claudenotes-frame`），页签再多也能拖；最大化保留、全屏去掉；分屏窗口没有留白。宽度在三处保持一致：`layout/getTopBarHeight.ts` 的 `WINDOW_FRAME_SIZE`、`--claudenotes-frame`、`electron/main.js` 的 `CLAUDENOTES_FRAME`。依赖窗口边缘位置的代码都用 `getWindowFrameSize()` 加上留白（页签栏是否在最顶上、侧栏浮动面板、菜单和子菜单、悬停预览框、`setPosition`）。留白盖在所有界面之上，打开对话框时跟着变暗，打开图片查看器时隐藏。用户不在意「最大化时甩到屏幕边缘弹不出侧栏面板」，保持现状
 - 已知问题见下面的「后续目标」
 
 ## 后续目标（按优先级）

@@ -48,8 +48,9 @@ export const setTabPosition = (onlyPadding = false, onlyClear = false) => {
     const centerRect = (isWindowMode ? window.siyuan.layout.layout : window.siyuan.layout.centerLayout).element.getBoundingClientRect();
     const toolbarDragElement = document.getElementById("drag");
     const toolbarDragRect = toolbarDragElement?.getBoundingClientRect() || {left: 0, right: 0};
-    // ClaudeNotes：窗口外围有可拖动留白时，最上面一排页签栏的 top 等于留白宽度
-    const topEdge = getWindowFrameSize();
+    // ClaudeNotes：窗口外围有可拖动留白时，最上面一排页签栏的 top 等于留白宽度，留 1px 余量防止缩放后取整误差
+    const frame = getWindowFrameSize();
+    const topEdge = frame ? frame + 1 : 0;
     if (toolbarDragElement) {
         toolbarDragElement.style.setProperty("--b3-toolbar-drag-left", "8px");
         toolbarDragElement.style.setProperty("--b3-toolbar-drag-right", "8px");

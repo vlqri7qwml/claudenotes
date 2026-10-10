@@ -17,7 +17,7 @@ import type {App} from "../index";
 import {resize} from "../protyle/util/resize";
 import {checkFold} from "../util/noRelyPCFunction";
 import {updateHotkeyAfterTip} from "../protyle/util/compatibility";
-import {getTopBarHeight} from "../layout/getTopBarHeight";
+import {getTopBarHeight, getWindowFrameSize} from "../layout/getTopBarHeight";
 import {activateAVLocateWithRetry} from "../protyle/render/av/locate";
 import {
     IBlockPanelItemInfo,
@@ -603,7 +603,7 @@ export class BlockPanel {
                         }
                         // 单击嵌入块悬浮窗的位置最好是覆盖嵌入块
                         // 防止图片撑高后悬浮窗显示不下，只能设置高度
-                        this.element.style.height = Math.min(window.innerHeight - topBarHeight, targetRect.height + 42) + "px";
+                        this.element.style.height = Math.min(window.innerHeight - getWindowFrameSize() - topBarHeight, targetRect.height + 42) + "px";
                         setPosition(this.element, targetRect.left, Math.max(top - 42, topBarHeight), -42, 0);
                     } else if (this.targetElement) {
                         if (this.targetElement.classList.contains("pdf__rect")) {
@@ -614,7 +614,7 @@ export class BlockPanel {
                         positionBlockPanel(this.element, targetRect);
                     } else if (typeof this.x === "number" && typeof this.y === "number") {
                         setPosition(this.element, this.x, this.y);
-                        this.element.style.maxHeight = Math.floor(window.innerHeight - Math.max(this.y, topBarHeight) - 12) + "px";
+                        this.element.style.maxHeight = Math.floor(window.innerHeight - getWindowFrameSize() - Math.max(this.y, topBarHeight) - 12) + "px";
                     }
                     this.element.classList.add("block__popover--open");
                     this.element.style.zIndex = (++window.siyuan.zIndex).toString();

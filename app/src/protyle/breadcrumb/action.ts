@@ -46,9 +46,11 @@ export const setFullscreen = (element: Element, enter: boolean, btnElement?: Ele
     } else if (window.siyuan.config.appearance.hideToolbar) {
         getAllWnds(window.siyuan.layout.centerLayout, wndsTemp);
     }
+    // 窗口外围有可拖动留白时，最上面一排页签栏的 top 等于留白宽度，留 1px 余量防止缩放后取整误差
+    const frame = getWindowFrameSize();
     wndsTemp.find(item => {
         const headerElement = item.headersElement.parentElement;
-        if (headerElement.getBoundingClientRect().top <= getWindowFrameSize()) {
+        if (headerElement.getBoundingClientRect().top <= (frame ? frame + 1 : 0)) {
             ((headerElement.querySelector(".item--readonly .fn__flex-1") as HTMLElement).style as CSSStyleDeclarationElectron).WebkitAppRegion =
                 enter ? "" : "drag";
             return true;
